@@ -1,36 +1,35 @@
-const Header = (props) => {
+const Header = ({course}) => {
   return (
-    <h1>{props.course}</h1>
+    <h1>{course}</h1>
   );
 };
 
-const Content = (props) => {
+const Content = ({parts}) => {
   return (
     <div>
-      <p>
-        {props.parts[0].name} {props.parts[0].exercises}
-      </p>
-      <p>
-        {props.parts[1].name} {props.parts[1].exercises}
-      </p>
-      <p>
-        {props.parts[2].name} {props.parts[2].exercises}
-      </p>
+      <Part part={parts[0]} />
+      <Part part={parts[1]} />
+      <Part part={parts[2]} />
     </div>
   );
 };
 
-const Part = (props) => {
-  <p>{props.parts[0].name} {props.parts[0].exercises}</p>
+const Part = ({part}) => {
+  return (
+    <p>
+      {part.name} {part.exercises}
+    </p>
+  );
 };
 
-const Total = (props) => {
+
+const Total = ({parts}) => {
   return (
     <p>
       Number of exercises{' '}
-      {props.parts[0].exercises +
-        props.parts[1].exercises +
-        props.parts[2].exercises}
+      {parts[0].exercises +
+        parts[1].exercises +
+        parts[2].exercises}
     </p>
   );
 };

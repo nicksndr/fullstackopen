@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Filter = ({ filterName, handleFilterChange }) => {
   return (
@@ -42,20 +43,22 @@ const Person = ({ person }) => {
 }
 
 const App = () => {
-  // const [persons, setPersons] = useState([
-  //   { name: 'Arto Hellas',
-  //     number: '929839323' }
-  // ]) 
-
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+
+  // Fetch data from JSON server when the component loads
+  useEffect(() => {
+  console.log('effect')
+  axios.get('http://localhost:3001/persons')
+    .then(response => {
+      setPersons(response.data); // Set state with fetched data
+    })
+    .catch(error => {
+      console.error("Error fetching data:", error);
+    });
+  }, []); // Empty dependency array means it runs once when the component mounts
 
   const personsToShow = filterName
   ? persons.filter(person => person.name.toLowerCase().includes(filterName.toLowerCase()))
@@ -80,7 +83,6 @@ const App = () => {
     setNewName('')
     setNewNumber('')
   }
-
 
   return (
     <div>

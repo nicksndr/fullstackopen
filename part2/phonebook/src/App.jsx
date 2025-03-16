@@ -27,21 +27,26 @@ const PersonForm = ({ newName, newNumber, handleNameChange, handleNumberChange, 
   )
 }
 
-const Persons = ({ personsToShow }) => {
+const Persons = ({ personsToShow, removePerson }) => {
   return (
     <div>
-    {personsToShow.map(person => (
-      <Person key={person.id} person={person} />
-    ))}
-  </div>
-  )
-}
+      {personsToShow.map(person => (
+        <Person key={person.id} person={person} removePerson={removePerson} />
+      ))}
+    </div>
+  );
+};
 
-const Person = ({ person }) => {
+
+const Person = ({ person, removePerson }) => {
   return (
-    <div>{person.name} {person.number}</div>
-  )
-}
+    <div>
+      {person.name} {person.number}
+      <button onClick={() => removePerson(person.id, person.name)}>delete</button>
+    </div>
+  );
+};
+
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -90,7 +95,21 @@ const App = () => {
     .catch(error => {
       console.error("Error adding person:", error);
     });
-};
+  };
+
+  const removePerson = (id, name) => {
+    if (!window.confirm(`Delete ${name}?`)) return;
+  
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id));
+      })
+      .catch(error => {
+        console.error("Error removing person:", error);
+      });
+    };
+
 
   return (
     <div>
@@ -104,7 +123,8 @@ const App = () => {
         addName={addName} 
       />
       <h3>Numbers</h3>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} removePerson={removePerson} /> 
+      {/* Also need to add removePerson here */}
     </div>
   )
 }

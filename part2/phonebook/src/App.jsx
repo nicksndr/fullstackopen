@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import personService from './services/persons'
 
 const Filter = ({ filterName, handleFilterChange }) => {
   return (
@@ -79,10 +80,10 @@ const App = () => {
       number: newNumber
     }
 
-    axios
-    .post('http://localhost:3001/persons', personObject)
-    .then(response => {
-      setPersons(persons.concat(response.data));
+    personService
+    .create(personObject)
+    .then(newPerson => {
+      setPersons(persons.concat(newPerson));
       setNewName('');
       setNewNumber('');
     })
@@ -90,11 +91,6 @@ const App = () => {
       console.error("Error adding person:", error);
     });
 };
-
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
-  }
 
   return (
     <div>

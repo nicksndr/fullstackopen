@@ -48,17 +48,16 @@ const Person = ({ person, removePerson }) => {
   );
 };
 
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
+const Notification = ({ message, type }) => {
+  if (message === null) return null;
 
   return (
-    <div className='success'>
+    <div className={type === 'error' ? 'error' : 'success'}>
       {message}
     </div>
-  )
-}
+  );
+};
+
 
 
 
@@ -68,6 +67,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
   const [successMessage, setSuccessMessage] = useState('added person...')
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Fetch data from JSON server when the component loads
   useEffect(() => {
@@ -101,10 +101,18 @@ const App = () => {
         const updatedPerson = { ...existingPerson, number: newNumber };
 
         personService
-          .update(existingPerson.id, updatedPerson)
-          .then(updatedPerson => {
-            setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
-          })
+        .update(existingPerson.id, updatedPerson)
+        .then(updatedPerson => {
+          setPersons(persons.map(p => p.id !== updatedPerson.id ? p : updatedPerson));
+          setSuccessMessage(`Updated '${newName}'`);
+          setTimeout(() => setSuccessMessage(null), 5000);
+        })
+        .catch(error => {
+          setErrorMessage(`Information of '${newName}' has already been removed from the server`);
+          setTimeout(() => setErrorMessage(null), 5000);
+          setPersons(persons.filter(p => p.id !== existingPerson.id));
+        });
+      
       }
     }
 
@@ -133,24 +141,31 @@ const App = () => {
     });
   };
 
-  const removePerson = (id, name) => {
-    if (!window.confirm(`Delete ${name}?`)) return;
+    const removePerson = (id, name) => {
+      if (!window.confirm(`Delete ${name}?`)) return;
   
     personService
-      .remove(id)
-      .then(() => {
-        setPersons(persons.filter(person => person.id !== id));
-      })
-      .catch(error => {
-        console.error("Error removing person:", error);
-      });
-    };
+    .remove(id)
+    .then(() => {
+      setPersons(persons.filter(person => person.id !== id));
+      setSuccessMessage(`Deleted '${name}'`);
+      setTimeout(() => setSuccessMessage(null), 5000);
+    })
+    .catch(error => {
+      setErrorMessage(`Information of '${name}' was already deleted from the server`);
+      setTimeout(() => setErrorMessage(null), 5000);
+      setPersons(persons.filter(p => p.id !== id));
+    });
+  };
+  
+
 
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <Notification message={successMessage} type="success" />
+      <Notification message={errorMessage} type="error" />
       <Filter filterName={filterName} handleFilterChange={(e) => setFilterName(e.target.value)} />
       <h3>Add a new</h3>
       <PersonForm 
@@ -164,6 +179,7 @@ const App = () => {
       {/* Also need to add removePerson here */}
     </div>
   )
+
 }
 
-export default App
+export default App;

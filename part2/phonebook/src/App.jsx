@@ -100,6 +100,7 @@ const App = () => {
         const existingPerson = persons.find(person => person.name === newName);
         const updatedPerson = { ...existingPerson, number: newNumber };
 
+        // Update
         personService
         .update(existingPerson.id, updatedPerson)
         .then(updatedPerson => {
@@ -122,6 +123,7 @@ const App = () => {
       number: newNumber
     }
 
+    // Create
     personService
     .create(personObject)
     .then(newPerson => {
@@ -141,6 +143,7 @@ const App = () => {
     });
   };
 
+    // Remove
     const removePerson = (id, name) => {
       if (!window.confirm(`Delete ${name}?`)) return;
   
@@ -176,7 +179,6 @@ const App = () => {
       />
       <h3>Numbers</h3>
       <Persons personsToShow={personsToShow} removePerson={removePerson} /> 
-      {/* Also need to add removePerson here */}
     </div>
   )
 

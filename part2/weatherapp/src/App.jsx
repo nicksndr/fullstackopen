@@ -24,7 +24,6 @@ const App = () => {
         const { lat, lon } = geoResponse.data[0]
 
         console.log(geoResponse)
-        console.log(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&units=metric&appid=${api_key}`)
   
         return axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&units=metric&appid=${api_key}`)
       })
@@ -84,8 +83,8 @@ const App = () => {
         The question mark (?.) is called the optional chaining operator in JavaScript.
         It prevents your code from crashing if a value is undefined or null.*/}
         <p>Temperature: {weather[0].temp.day} °C</p>
-        <p>Wind: {weather[0].wind_speed} m/s</p>
         <img src={`https://openweathermap.org/img/wn/${weather[0].weather[0].icon}@2x.png`} alt="Weather icon" />
+        <p>Wind: {weather[0].wind_speed} m/s</p>
       </>
     )}
       </div>

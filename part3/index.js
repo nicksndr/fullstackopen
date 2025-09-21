@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const PORT = 3001
 
 app.use(express.json())
 
@@ -20,10 +19,31 @@ let persons = [
   app.get('/info', (req, res) => {
     const entriesCount = persons.length
     const requestTime = new Date().toString()  
-    res.send(`Phonebook has info fo ${entriesCount} people <br> Request received at: ${requestTime}`)
+    res.send(`Phonebook has info of ${entriesCount} people <br> Request received at: ${requestTime}`)
     //res.send('Info page is working')
   })
 
+  // information for single phonebook entry
+  app.get('/api/persons/:id', (req, res) => {
+    const id = req.params.id
+    
+    if(exists = persons.some(p => p.id === id)){
+        const person = persons.find(p => p.id === id)
+        res.send(`Name: ${person.name}<br>Number: ${person.number}`)
+    }else{
+        res.send("404 Person not found")
+    }
+  })
+
+  // delete phone request
+  app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    persons = persons.filter(p => p.id !== id)
+  
+    response.status(204).end()
+  })
+
+const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

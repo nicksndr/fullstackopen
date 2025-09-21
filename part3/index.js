@@ -27,7 +27,7 @@ let persons = [
   app.get('/api/persons/:id', (req, res) => {
     const id = req.params.id
     
-    if(exists = persons.some(p => p.id === id)){
+    if(persons.some(p => p.id === id)){
         const person = persons.find(p => p.id === id)
         res.send(`Name: ${person.name}<br>Number: ${person.number}`)
     }else{
@@ -41,6 +41,31 @@ let persons = [
     persons = persons.filter(p => p.id !== id)
   
     response.status(204).end()
+  })
+
+  // add new person with POST request
+  app.post('/api/persons', (request, response) => {
+
+    if (!request.body.name) {
+        return response.status(400).json({ error: 'name is missing' })
+      }
+
+    if (!request.body.number) {
+        return response.status(400).json({ error: 'number is missing' })
+    }
+
+    if (persons.some(p => p.name === request.body.name)) {
+        return response.status(400).json({ error: 'name already exists' })
+    }
+
+    const person = {
+        id: Math.floor(Math.random() * 10000),
+        name: request.body.name,
+        number: request.body.number
+      }
+    
+      persons.push(person)
+      response.json(person)
   })
 
 const PORT = 3001

@@ -1,7 +1,9 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
 
 app.use(express.json())
+app.use(cors()) // <--- enable CORS for all routes
 
 let persons = [
     { id: "1", name: "Arto Hellas", number: "040-123456" },

@@ -72,7 +72,7 @@ const App = () => {
   // Fetch data from JSON server when the component loads
   useEffect(() => {
   console.log('effect')
-  axios.get('http://localhost:3001/api/persons')
+  axios.get('/api/persons')
     .then(response => {
       setPersons(response.data); // Set state with fetched data
     })

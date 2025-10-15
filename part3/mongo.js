@@ -10,7 +10,7 @@ const name = process.argv[3]
 const number = process.argv[4]
 
 // added name phonebookApp as databse name
-const url = `mongodb+srv://nicklas-user:nicklas-test-password@fullstackopen.ne6xdzf.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=fullstackopen`
+const url = `mongodb+srv://nicklas-user:${password}@fullstackopen.ne6xdzf.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=fullstackopen`
 
 mongoose.set('strictQuery',false)
 

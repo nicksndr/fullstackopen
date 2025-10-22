@@ -1,44 +1,53 @@
+require('dotenv').config()
 const express = require('express')
-// const cors = require('cors')
 const app = express()
+const Person = require('./models/person')  //import the model
+// const cors = require('cors')
 
+// app.use(cors())
 app.use(express.json())
-// app.use(cors()) // <--- enable CORS for all routes
-
-// Serve static files from the frontend
 app.use(express.static('dist'))
 
-let persons = [
-    { id: "1", name: "Arto Hellas", number: "040-123456" },
-    { id: "2", name: "Ada Lovelace", number: "39-44-5323523" },
-    { id: "3", name: "Dan Abramov", number: "12-43-234345" },
-    { id: "4", name: "Mary Poppendieck", number: "39-23-6423122" }
-  ]
 
-  //all the persons
-  app.get('/api/persons', (request, response) => {
+//all the persons
+app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
     response.json(persons)
   })
+})
 
-  // info page
-  app.get('/info', (req, res) => {
-    const entriesCount = persons.length
-    const requestTime = new Date().toString()  
-    res.send(`Phonebook has info of ${entriesCount} people <br> Request received at: ${requestTime}`)
-    //res.send('Info page is working')
+// info page
+app.get('/info', (request, response) => {
+  Person.countDocuments({}).then(count => {
+    const requestTime = new Date()
+    response.send(`
+      <p>Phonebook has info for ${count} people</p>
+      <p>${requestTime}</p>
+    `)
   })
+  })
+
+app.get('/api/persons/:id', (request, response) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+})
 
   // information for single phonebook entry
-  app.get('/api/persons/:id', (req, res) => {
-    const id = req.params.id
-    
-    if(persons.some(p => p.id === id)){
-        const person = persons.find(p => p.id === id)
-        res.send(`Name: ${person.name}<br>Number: ${person.number}`)
-    }else{
-        res.send("404 Person not found")
-    }
-  })
+  // app.get('/api/persons/:id', (req, res) => {
+    // const id = req.params.id
+    // if(persons.some(p => p.id === id)){
+    //     const person = persons.find(p => p.id === id)
+    //     res.send(`Name: ${person.name}<br>Number: ${person.number}`)
+    // }else{
+    //     res.send("404 Person not found")
+    // }
+  // })
 
   // delete phone request
   app.delete('/api/persons/:id', (request, response) => {

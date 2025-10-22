@@ -13,16 +13,7 @@ const number = process.argv[4]
 const url = `mongodb+srv://nicklas-user:${password}@fullstackopen.ne6xdzf.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=fullstackopen`
 mongoose.set('strictQuery',false)
 
-mongoose.set('debug', true)
-
 mongoose.connect(url)
-  .then(() => {
-    console.log('✅ Connected to MongoDB Atlas')
-  })
-  .catch(err => {
-    console.error('❌ Connection error:', err)
-  })
-
 
 const personSchema = new mongoose.Schema({
     name: String,

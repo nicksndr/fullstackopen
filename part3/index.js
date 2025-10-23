@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const Person = require('./models/person')  //import the model
+const Person = require('./persons.js')  //import the model
 // const cors = require('cors')
 
 // app.use(cors())
@@ -60,26 +60,27 @@ app.get('/api/persons/:id', (request, response) => {
   // add new person with POST request
   app.post('/api/persons', (request, response) => {
 
-    if (!request.body.name) {
-        return response.status(400).json({ error: 'name is missing' })
-      }
+    const body = request.body
 
-    if (!request.body.number) {
-        return response.status(400).json({ error: 'number is missing' })
+
+    if (!body.name) {
+      return response.status(400).json({ error: 'name is missing' })
+    }
+  
+    if (!body.number) {
+      return response.status(400).json({ error: 'number is missing' })
     }
 
-    if (persons.some(p => p.name === request.body.name)) {
-        return response.status(400).json({ error: 'name already exists' })
-    }
-
-    const person = {
-        id: Math.floor(Math.random() * 10000),
-        name: request.body.name,
-        number: request.body.number
-      }
+    const person = new Person({
+        // id: Math.floor(Math.random() * 10000),
+        name: body.name,
+        number: body.number
+      })
     
-      persons.push(person)
-      response.json(person)
+    // Save to the database
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
 const PORT = 3001

@@ -27,7 +27,7 @@ app.get('/info', (request, response) => {
   })
   })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request , response) => {
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -35,6 +35,10 @@ app.get('/api/persons/:id', (request, response) => {
       } else {
         response.status(404).end()
       }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
     })
 })
 
@@ -50,11 +54,12 @@ app.get('/api/persons/:id', (request, response) => {
   // })
 
   // delete phone request
-  app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    persons = persons.filter(p => p.id !== id)
-  
-    response.status(204).end()
+  app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
   })
 
   // add new person with POST request
@@ -82,6 +87,43 @@ app.get('/api/persons/:id', (request, response) => {
       response.json(savedPerson)
     })
   })
+
+  //update person with PUT request
+  app.put('/api/persons/:id', (request, response, next) => {
+    const id = request.params.id
+    const updatedData = request.body
+  
+    //new:  If set to true, returns the modified document rather than the original.
+    //runValidators:  If true, runs schema validation during the update
+    Person.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true })
+      .then(updatedItem => {
+        if (updatedItem) {
+          response.json(updatedItem)
+        } else {
+          response.status(404).end()
+        }
+      })
+      .catch(error => next(error))
+  })
+
+  // 404 handler
+  const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+  }
+  app.use(unknownEndpoint)
+
+  // ERROR HANDLER
+  const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    // Handle all other errors
+    response.status(500).send({ error: 'something went wrong' })
+  }
+  app.use(errorHandler)
 
 const PORT = 3001
 app.listen(PORT, () => {

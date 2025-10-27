@@ -98,13 +98,15 @@ const App = () => {
         if (!window.confirm(`${newName} is already added to phonebook, replace the old number with a new one`)) return;
         
         const existingPerson = persons.find(person => person.name === newName);
-        const updatedPerson = { ...existingPerson, number: newNumber };
+        const updatedPerson = { name: newName, number: newNumber }; //before: ...existingPerson -> this also tried to update mongodb internal fields like _id, you can't do this
 
         // Update
         personService
         .update(existingPerson.id, updatedPerson)
         .then(updatedPerson => {
           setPersons(persons.map(p => p.id !== updatedPerson.id ? p : updatedPerson));
+          setNewName('');
+          setNewNumber('');
           setSuccessMessage(`Updated '${newName}'`);
           setTimeout(() => setSuccessMessage(null), 5000);
         })
@@ -113,7 +115,7 @@ const App = () => {
           setTimeout(() => setErrorMessage(null), 5000);
           setPersons(persons.filter(p => p.id !== existingPerson.id));
         });
-      
+        return; // Important: exit the function after update
       }
     }
 

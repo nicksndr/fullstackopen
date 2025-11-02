@@ -24,8 +24,11 @@ app.get('/info', (request, response) => {
       <p>Phonebook has info for ${count} people</p>
       <p>${requestTime}</p>
     `)
+  }).catch(error => {
+    console.error(error)
+    response.status(500).send({ error: 'error retrieving info' })
   })
-  })
+})
 
 app.get('/api/persons/:id', (request , response) => {
   Person.findById(request.params.id)
@@ -63,7 +66,7 @@ app.get('/api/persons/:id', (request , response) => {
   })
 
   // add new person with POST request
-  app.post('/api/persons', (request, response) => {
+  app.post('/api/persons', (request, response, next) => {
 
     const body = request.body
 
@@ -86,6 +89,7 @@ app.get('/api/persons/:id', (request , response) => {
     person.save().then(savedPerson => {
       response.json(savedPerson)
     })
+    .catch(error => next(error))
   })
 
   //update person with PUT request
@@ -118,6 +122,8 @@ app.get('/api/persons/:id', (request , response) => {
 
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+      return response.status(400).json({ error: error.message })
     }
 
     // Handle all other errors

@@ -141,7 +141,10 @@ const App = () => {
       }, 5000)
     })
     .catch(error => {
-      console.error("Error adding person:", error);
+      // also add fallback message
+      const errorMessage = error.response.data.error || 'Error adding person';
+      setErrorMessage(errorMessage);
+      setTimeout(() => setErrorMessage(null), 5000);
     });
   };
 

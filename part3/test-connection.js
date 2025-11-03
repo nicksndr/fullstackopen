@@ -19,7 +19,7 @@ mongoose.connect(url, {
     console.error('❌ Failed to connect to MongoDB')
     console.error('Error name:', error.name)
     console.error('Error message:', error.message)
-    
+
     if (error.message.includes('ENOTFOUND')) {
       console.error('\n🔍 DNS Resolution Issue: Cannot find MongoDB server hostname')
       console.error('Possible solutions:')
@@ -35,7 +35,7 @@ mongoose.connect(url, {
       console.error('3. Try a different network')
       console.error('4. Check firewall settings')
     }
-    
+
     process.exit(1)
   })
 

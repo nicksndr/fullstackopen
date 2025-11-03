@@ -45,91 +45,91 @@ app.get('/api/persons/:id', (request , response) => {
     })
 })
 
-  // information for single phonebook entry
-  // app.get('/api/persons/:id', (req, res) => {
-    // const id = req.params.id
-    // if(persons.some(p => p.id === id)){
-    //     const person = persons.find(p => p.id === id)
-    //     res.send(`Name: ${person.name}<br>Number: ${person.number}`)
-    // }else{
-    //     res.send("404 Person not found")
-    // }
-  // })
+// information for single phonebook entry
+// app.get('/api/persons/:id', (req, res) => {
+// const id = req.params.id
+// if(persons.some(p => p.id === id)){
+//     const person = persons.find(p => p.id === id)
+//     res.send(`Name: ${person.name}<br>Number: ${person.number}`)
+// }else{
+//     res.send("404 Person not found")
+// }
+// })
 
-  // delete phone request
-  app.delete('/api/persons/:id', (request, response, next) => {
-    Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+// delete phone request
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
+})
+
+// add new person with POST request
+app.post('/api/persons', (request, response, next) => {
+
+  const body = request.body
+
+
+  if (!body.name) {
+    return response.status(400).json({ error: 'name is missing' })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({ error: 'number is missing' })
+  }
+
+  const person = new Person({
+    // id: Math.floor(Math.random() * 10000),
+    name: body.name,
+    number: body.number
   })
 
-  // add new person with POST request
-  app.post('/api/persons', (request, response, next) => {
+  // Save to the database
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
+    .catch(error => next(error))
+})
 
-    const body = request.body
+//update person with PUT request
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  const updatedData = request.body
 
-
-    if (!body.name) {
-      return response.status(400).json({ error: 'name is missing' })
-    }
-  
-    if (!body.number) {
-      return response.status(400).json({ error: 'number is missing' })
-    }
-
-    const person = new Person({
-        // id: Math.floor(Math.random() * 10000),
-        name: body.name,
-        number: body.number
-      })
-    
-    // Save to the database
-    person.save().then(savedPerson => {
-      response.json(savedPerson)
+  //new:  If set to true, returns the modified document rather than the original.
+  //runValidators:  If true, runs schema validation during the update
+  Person.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true })
+    .then(updatedItem => {
+      if (updatedItem) {
+        response.json(updatedItem)
+      } else {
+        response.status(404).end()
+      }
     })
     .catch(error => next(error))
-  })
+})
 
-  //update person with PUT request
-  app.put('/api/persons/:id', (request, response, next) => {
-    const id = request.params.id
-    const updatedData = request.body
-  
-    //new:  If set to true, returns the modified document rather than the original.
-    //runValidators:  If true, runs schema validation during the update
-    Person.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true })
-      .then(updatedItem => {
-        if (updatedItem) {
-          response.json(updatedItem)
-        } else {
-          response.status(404).end()
-        }
-      })
-      .catch(error => next(error))
-  })
+// 404 handler
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
 
-  // 404 handler
-  const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
+// ERROR HANDLER
+const errorHandler = (error, request, response) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
-  app.use(unknownEndpoint)
 
-  // ERROR HANDLER
-  const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') {
-      return response.status(400).json({ error: error.message })
-    }
-
-    // Handle all other errors
-    response.status(500).send({ error: 'something went wrong' })
-  }
-  app.use(errorHandler)
+  // Handle all other errors
+  response.status(500).send({ error: 'something went wrong' })
+}
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

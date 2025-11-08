@@ -1,11 +1,13 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const Blog = require('./blogs.js')  //import the model
+const Blog = require('./models/blog.js')  //import the model
+const { info, error } = require('./utils/logger')
+const config = require('./utils/config')
 
-const url = process.env.MONGODB_URI
+const url = config.MONGODB_URI
 
 if (!url) {
-  console.log('Error: MONGODB_URI not found in .env file')
+  info('Error: MONGODB_URI not found in .env file')
   process.exit(1)
 }
 
@@ -14,7 +16,7 @@ mongoose.set('strictQuery', false)
 console.log('connecting to', url)
 mongoose.connect(url)
   .then(() => {
-    console.log('connected to MongoDB')
+    info('connected to MongoDB')
     
     const title = process.argv[2]
     const author = process.argv[3]
@@ -25,17 +27,17 @@ mongoose.connect(url)
     if (process.argv.length === 2) {
       // If no arguments given, list all blogs
       Blog.find({}).then(result => {
-        console.log('\nBlogs in database:')
+        info('\nBlogs in database:')
         if (result.length === 0) {
-          console.log('No blogs found')
+            info('No blogs found')
         } else {
           result.forEach(blog => {
-            console.log(`${blog.title} by ${blog.author} - ${blog.url} (${blog.likes} likes)`)
+            info(`${blog.title} by ${blog.author} - ${blog.url} (${blog.likes} likes)`)
           })
         }
         mongoose.connection.close()
-      }).catch(error => {
-        console.log('Error fetching blogs:', error.message)
+      }).catch(err => {
+        error('Error fetching blogs:', err.message)
         mongoose.connection.close()
         process.exit(1)
       })
@@ -49,22 +51,22 @@ mongoose.connect(url)
       })
 
       blog.save().then(() => {
-        console.log(`\nAdded blog: "${title}" by ${author} to database`)
+        info(`\nAdded blog: "${title}" by ${author} to database`)
         mongoose.connection.close()
-      }).catch(error => {
-        console.log('Error saving blog:', error.message)
+      }).catch(err => {
+        error('Error saving blog:', err.message)
         mongoose.connection.close()
         process.exit(1)
       })
     } else {
     // invalid arguments: it prints usage instruction
-      console.log('\nUsage:')
-      console.log('  node mongo.js                    - List all blogs')
-      console.log('  node mongo.js <title> <author> <url> [likes] - Add a new blog')
+      info('\nUsage:')
+      info('  node mongo.js                    - List all blogs')
+      info('  node mongo.js <title> <author> <url> [likes] - Add a new blog')
       mongoose.connection.close()
     }
   })
-  .catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
+  .catch(err => {
+    error('error connecting to MongoDB:', err.message)
     mongoose.connection.close()
   })

@@ -1,8 +1,5 @@
 const mongoose = require('mongoose')
 
-// if true: only the fields that are specified in your schema will be saved in the database.
-mongoose.set('strictQuery', false)
-
 const blogSchema = mongoose.Schema({
   title: String,
   author: String,

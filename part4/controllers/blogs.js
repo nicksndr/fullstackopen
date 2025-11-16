@@ -31,6 +31,31 @@ blogsRouter.get('/', (request, response) => {
       .catch(error => next(error))
   })
   
+  //update blog post with PUT request
+  blogsRouter.put('/:id', (request, response, next) => {
+    const body = request.body
+  
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+    }
+  
+    Blog.findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true })
+      .then((updatedBlog) => {
+        if (updatedBlog) {
+          response.json(updatedBlog)
+        } else {
+          response.status(404).end()
+        }
+      })
+      .catch((err) => {
+        error('Error updating blog:', err)
+        next(err)
+      })
+  })
+  
   blogsRouter.post('/', (request, response) => {
     const body = request.body
   

@@ -66,7 +66,7 @@ describe('testing the blogs', () => {
       url: 'www.blogs.org',
     }
   
-    await api
+    const response = await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
@@ -104,6 +104,21 @@ describe('testing the blogs', () => {
   
     const blogsAtEnd = await helper.blogsInDb()
     assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
+  })
+
+  test('deleting a blog post', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+  
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const titles = blogsAtEnd.map(b => b.title)
+    assert(!titles.includes(blogToDelete.title))
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
   })
 
 })

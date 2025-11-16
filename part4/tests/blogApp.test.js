@@ -125,3 +125,59 @@ describe('totalLikes', () => {
         )
     })
   })
+
+  describe('mostLikes', () => {
+    const blogs = [
+        {
+          _id: '1',
+          title: 'Understanding Node.js',
+          author: 'Alice Johnson',
+          url: 'https://example.com/node',
+          likes: 7,
+          __v: 0
+        },
+        {
+          _id: '2',
+          title: 'Mastering Express',
+          author: 'Bob Smith',
+          url: 'https://example.com/express',
+          likes: 5,
+          __v: 0
+        },
+        {
+          _id: '3',
+          title: 'MongoDB Tips',
+          author: 'Alice Johnson',
+          url: 'https://example.com/mongo',
+          likes: 3,
+          __v: 0
+        },
+        {
+          _id: '4',
+          title: 'Full Stack Best Practices',
+          author: 'Charlie Lee',
+          url: 'https://example.com/fullstack',
+          likes: 10,
+          __v: 0
+        },
+        {
+          _id: '5',
+          title: 'Async JavaScript',
+          author: 'Alice Johnson',
+          url: 'https://example.com/async',
+          likes: 8,
+          __v: 0
+        }
+      ]
+      
+    test('author with most likes', () => {
+        const result = listHelper.mostLikes(blogs)
+        assert.deepStrictEqual(
+            result,
+            {
+                author: "Alice Johnson",
+                likes: 18
+            }
+        )
+    })
+  })

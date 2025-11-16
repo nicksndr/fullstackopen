@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "node --test"
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node --watch index.js",
+    "test": "NODE_ENV=test node --test",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "lodash": "^4.17.21",
-    "mongoose": "^8.19.1"
+    "mongoose": "^8.19.1",
+    "supertest": "^7.1.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

@@ -18,6 +18,10 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs)
 })
 
+after(async () => {
+  await mongoose.connection.close()
+})
+
 
 describe('testing the blogs', () => {
 
@@ -34,8 +38,72 @@ describe('testing the blogs', () => {
     })
   })
 
-})
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'adding blogs is not that difficult',
+      author: 'Andy Author',
+      url: 'www.blogs.org',
+      likes: 3,
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const response = await api.get('/api/blogs')
+    const contents = response.body.map(r => r.title)
+  
+    assert.strictEqual(response.body.length, helper.initialBlogs.length + 1)
+    assert(contents.includes('adding blogs is not that difficult'))
+  })
 
-after(async () => {
-  await mongoose.connection.close()
+  test('missing likes property', async () => {
+    const newBlog = {
+      title: 'adding blogs is not that difficult',
+      author: 'Andy Author',
+      url: 'www.blogs.org',
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const newBlogWithoutLikes = response.body
+  
+    assert.strictEqual(newBlogWithoutLikes.likes, 0)
+  })
+
+  test('missing title or url, results in 400 error', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const missingTitle = {
+      author: 'Andy Author',
+      url: 'https://blog.org',
+      likes: 3,
+    }
+  
+    const missingUrl = {
+      title: 'adding blogs is not that difficult',
+      author: 'Andy Author',
+      likes: 3,
+    }
+  
+    await api
+      .post('/api/blogs')
+      .send(missingTitle)
+      .expect(400)
+  
+    await api
+      .post('/api/blogs')
+      .send(missingUrl)
+      .expect(400)
+  
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
+  })
+
 })

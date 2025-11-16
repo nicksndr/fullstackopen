@@ -4,8 +4,9 @@ const config = require('./utils/config')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
-
 const app = express()
+
+mongoose.set('strictQuery', false)
 
 logger.info('connecting to', config.MONGODB_URI)
 

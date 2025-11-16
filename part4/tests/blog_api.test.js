@@ -9,10 +9,6 @@ const config = require('../utils/config')
 
 const api = supertest(app)
 
-before(async () => {
-  await mongoose.connect(config.MONGODB_URI)
-})
-
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)

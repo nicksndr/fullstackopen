@@ -37,6 +37,10 @@ blogsRouter.get('/', (request, response) => {
     if (!body.title) {
       return response.status(400).json({ error: 'title is missing' })
     }
+
+    if (!body.url) {
+        return response.status(400).json({ error: 'url is missing' })
+      }
   
     const blog = new Blog({
       title: body.title,

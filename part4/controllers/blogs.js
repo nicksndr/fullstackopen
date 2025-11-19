@@ -1,14 +1,17 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
     
-  const blogs = await Blog.find({}) // When using async/await syntax, Express will automatically call the error-handling middleware if an await statement throws an error or the awaited promise is rejected. 
+  // When using async/await syntax, Express will automatically call the error-handling middleware if an await statement throws an error or the awaited promise is rejected. 
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  
   response.json(blogs)
 })
   
   blogsRouter.get('/:id', async (request , response) => {
-    const blog = await Blog.findById(request.params.id)
+    const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
 
     if (blog) {
       response.json(blog)
@@ -73,14 +76,23 @@ blogsRouter.get('/', async (request, response) => {
         return response.status(400).json({ error: 'url is missing' })
       }
   
+    // Find the first user from the database
+    const user = await User.findOne()
+    
+    if (!user) {
+      return response.status(400).json({ error: 'no users found in database' })
+    }
+  
     const blog = new Blog({
       title: body.title,
       author: body.author,
       url: body.url,
       likes: body.likes || 0,
+      user: user._id,
     })
   
     const savedBlog = await blog.save()
+    
     response.status(201).json(savedBlog)
   })
 

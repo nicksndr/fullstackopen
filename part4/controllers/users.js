@@ -5,8 +5,24 @@ const User = require('../models/user')
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
+  // username validation
+  if (!username || username.length < 3) {
+    return response.status(400).json({ error: 'username must be at least 3 characters long' })
+  }
+
+  // password is tested not with Mongoose validation as we use the hash later
+  if (!password || password.length < 3) {
+    return response.status(400).json({ error: 'password must be at least 3 characters long' })
+  }
+
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
+
+  const existingUser = await User.findOne({ username })
+
+  if (existingUser) {
+    return response.status(400).json({ error: 'username must be unique' })
+  }
 
   const user = new User({
     username,

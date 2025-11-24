@@ -22,9 +22,39 @@ blogsRouter.get('/', async (request, response) => {
   })
 
   blogsRouter.delete('/:id', async(request, response, next) => {
+    if (!request.token) {
+      return response.status(401).json({ error: 'token missing' })
+    }
+
+    const decodedToken = await jwt.verify(request.token, process.env.SECRET)
+
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+
+    // Find the blog to check if it exists and get the creator -> we only need to blog here not the user
+    const blog = await Blog.findById(request.params.id)
+
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' })
+    }
+
+    // Check if the user from token is the creator of the blog
+    // Compare blog.user (ObjectId) with decodedToken.id (string)
+    if (blog.user.toString() !== decodedToken.id.toString()) {
+      return response.status(403).json({ error: 'only the creator can delete this blog' })
+    }
+
+    // User is authorized, delete the blog
     const deletedBlog = await Blog.findByIdAndDelete(request.params.id)
-    
+
     if (deletedBlog) {
+      // Remove the blog from the user's blogs array
+      const user = await User.findById(decodedToken.id)
+      if (user) {
+        user.blogs = user.blogs.filter(blogId => blogId.toString() !== deletedBlog._id.toString())
+        await user.save()
+      }
       response.status(204).end()
     } else {
       response.status(404).end()

@@ -26,12 +26,6 @@ blogsRouter.get('/', async (request, response) => {
       return response.status(401).json({ error: 'token missing' })
     }
 
-    const decodedToken = await jwt.verify(request.token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
-
     // Find the blog to check if it exists and get the creator -> we only need to blog here not the user
     const blog = await Blog.findById(request.params.id)
 
@@ -50,7 +44,7 @@ blogsRouter.get('/', async (request, response) => {
 
     if (deletedBlog) {
       // Remove the blog from the user's blogs array
-      const user = await User.findById(decodedToken.id)
+      const user = request.user
       if (user) {
         user.blogs = user.blogs.filter(blogId => blogId.toString() !== deletedBlog._id.toString())
         await user.save()
@@ -102,12 +96,6 @@ blogsRouter.get('/', async (request, response) => {
     if (!request.token) {
       return response.status(401).json({ error: 'token missing' })
     }
-
-    const decodedToken = await jwt.verify(request.token, process.env.SECRET)
-
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' })
-    }
   
     if (!body.title) {
       return response.status(400).json({ error: 'title is missing' })
@@ -117,8 +105,8 @@ blogsRouter.get('/', async (request, response) => {
         return response.status(400).json({ error: 'url is missing' })
       }
   
-    // Find the user from the decoded token
-    const user = await User.findById(decodedToken.id)
+    // Find the user from the decoded token -> now in middlewwar
+    const user = request.user
     
     if (!user) {
       return response.status(401).json({ error: 'user not found' })

@@ -2,12 +2,16 @@ const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const app = require('../app')
 const helper = require('./helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const config = require('../utils/config')
 
 const api = supertest(app)
+
+let authToken = null
 
 before(async () => {
   await mongoose.connect(config.MONGODB_URI)
@@ -15,7 +19,34 @@ before(async () => {
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
+  // await Blog.insertMany(helper.initialBlogs)
+  await User.deleteMany({})
+
+  // Create a test user
+  const passwordHash = await bcrypt.hash('testpassword', 10)
+  const testUser = new User({
+    username: 'testuser',
+    name: 'Test User',
+    passwordHash: passwordHash,
+  })
+  await testUser.save()
+
+  // Login to get a token
+  const loginResponse = await api
+    .post('/api/login')
+    .send({
+      username: 'testuser',
+      password: 'testpassword',
+    })
+
+  authToken = loginResponse.body.token
+
+  // Create blogs with user association
+  const blogsWithUser = helper.initialBlogs.map(blog => ({
+    ...blog,
+    user: testUser._id,
+  }))
+  await Blog.insertMany(blogsWithUser)
 })
 
 after(async () => {
@@ -48,6 +79,7 @@ describe('testing the blogs', () => {
   
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -68,6 +100,7 @@ describe('testing the blogs', () => {
   
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -94,14 +127,36 @@ describe('testing the blogs', () => {
   
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(missingTitle)
       .expect(400)
   
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(missingUrl)
       .expect(400)
   
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
+  })
+
+  test('adding a blog fails with 401 if token is not provided', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const newBlog = {
+      title: 'This should fail',
+      author: 'Test Author',
+      url: 'https://test.com',
+      likes: 5,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
     const blogsAtEnd = await helper.blogsInDb()
     assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
   })
@@ -112,6 +167,7 @@ describe('testing the blogs', () => {
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${authToken}`)
       .expect(204)
   
     const blogsAtEnd = await helper.blogsInDb()

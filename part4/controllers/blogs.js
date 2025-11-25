@@ -26,6 +26,10 @@ blogsRouter.get('/', async (request, response) => {
       return response.status(401).json({ error: 'token missing' })
     }
 
+    if (!request.user) {
+      return response.status(401).json({ error: 'user not found' })
+    }
+
     // Find the blog to check if it exists and get the creator -> we only need to blog here not the user
     const blog = await Blog.findById(request.params.id)
 
@@ -34,8 +38,8 @@ blogsRouter.get('/', async (request, response) => {
     }
 
     // Check if the user from token is the creator of the blog
-    // Compare blog.user (ObjectId) with decodedToken.id (string)
-    if (blog.user.toString() !== decodedToken.id.toString()) {
+    // Compare blog.user (ObjectId) with request.user._id (ObjectId)
+    if (blog.user.toString() !== request.user._id.toString()) {
       return response.status(403).json({ error: 'only the creator can delete this blog' })
     }
 

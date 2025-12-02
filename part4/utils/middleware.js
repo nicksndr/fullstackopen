@@ -20,12 +20,15 @@ const tokenExtractor = (request, response, next) => {
 
 // identify user related to request and attach it to request object
 const userExtractor = async (request, response, next) => {
+  if (!request.token) {
+    return next()
+  }
+
   try {
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     const user = await User.findById(decodedToken.id)
     request.user = user
   } catch (error) {
-    // Let errorHandler middleware handle the error
     return next(error)
   }
 

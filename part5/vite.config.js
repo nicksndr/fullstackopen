@@ -8,7 +8,9 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:3003',
-        changeOrigin: true
+        changeOrigin: true,
+        secure: false, //Allows the proxy to work without SSL certificate verification (useful for local dev)
+        ws: true //Enables WebSocket support and can improve how the proxy handles connections
       }
     }
   }

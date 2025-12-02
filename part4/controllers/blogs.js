@@ -100,7 +100,7 @@ blogsRouter.get('/', async (request, response) => {
     if (!request.token) {
       return response.status(401).json({ error: 'token missing' })
     }
-  
+
     if (!body.title) {
       return response.status(400).json({ error: 'title is missing' })
     }
@@ -108,10 +108,10 @@ blogsRouter.get('/', async (request, response) => {
     if (!body.url) {
         return response.status(400).json({ error: 'url is missing' })
       }
-  
+
     // Find the user from the decoded token -> now in middlewwar
     const user = request.user
-    
+
     if (!user) {
       return response.status(401).json({ error: 'user not found' })
     }

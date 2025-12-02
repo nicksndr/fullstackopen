@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   // const [newBlog, setNewBlog] = useState('')
   // const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -74,6 +76,8 @@ const App = () => {
       setTitle('');
       setAuthor('');
       setUrl('');
+      setSuccessMessage(`a new blog '${title}' by '${author}' added`);
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Error adding blog'
       setErrorMessage(errorMessage)
@@ -117,13 +121,14 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <h2>blogs</h2> 
+      {errorMessage && <div className={"error"}>{errorMessage}</div>}      {/* works like condition && doSomething(), successMesssage set to null again after the time out */}
+      {successMessage && <div className={"success"}>{successMessage}</div>}
       <p>{user.name} logged in</p>
       <button onClick={() => {
         window.localStorage.removeItem('loggedInUser')
         setUser(null)
       }}>logout</button>
-      {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}

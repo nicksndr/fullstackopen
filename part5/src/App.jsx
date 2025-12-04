@@ -89,6 +89,25 @@ const App = () => {
     }
   }
 
+  const likeButton = async (blog) => {
+
+    const newBlog = {
+      url: blog.url,
+      title: blog.title,
+      author: blog.author,
+      user: blog.user,
+      likes: blog.likes + 1
+    }
+
+    blogService
+    .update(blog.id, newBlog)
+    .then(newBlog => {
+      setBlogs(blogs.map(b => b.id !== newBlog.id ? b : newBlog));
+    })
+
+    return; // Important: exit the function after update
+  }
+
   if (user === null) {
     return (
       <div>
@@ -146,7 +165,7 @@ const App = () => {
     </Togglable>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onClick={() => likeButton(blog)} />
       )}
     </div>
   )

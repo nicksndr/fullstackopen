@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -129,24 +131,23 @@ const App = () => {
         window.localStorage.removeItem('loggedInUser')
         setUser(null)
       }}>logout</button>
+
+    <Togglable buttonLabel="create new blog">
+      {/* crete button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
+      <BlogForm
+        onSubmit={handleSubmit}
+        title={title}
+        author={author}
+        url={url}
+        handleTitleChange={({ target }) => setTitle(target.value)}
+        handleAuthorChange={({ target }) => setAuthor(target.value)}
+        handleUrlChange={({ target }) => setUrl(target.value)}
+      />
+    </Togglable>
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          Title: <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-        <div>
-          Author: <input value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          Url: <input value={url} onChange={(e) => setUrl(e.target.value)} />
-        </div>
-        <div>
-          <button type="submit">Create</button>
-        </div>
-      </form>
     </div>
   )
 }

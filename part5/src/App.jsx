@@ -108,6 +108,19 @@ const App = () => {
     return; // Important: exit the function after update
   }
 
+  const removeBlog = async (blog) => {
+
+    if (!window.confirm(`Remove ${blog.title} by ${blog.author}`)) return;
+
+    blogService
+    .remove(blog.id, user.token)
+    .then(() => {
+      setBlogs(blogs.filter(b => b.id !== blog.id));
+    })
+
+    return;
+  }
+
   if (user === null) {
     return (
       <div>
@@ -167,7 +180,7 @@ const App = () => {
       {blogs
       .sort((a, b) => b.likes - a.likes)
       .map(blog =>
-        <Blog key={blog.id} blog={blog} onClick={() => likeButton(blog)} />
+        <Blog key={blog.id} blog={blog} onClick={() => likeButton(blog)} remove={() => removeBlog(blog)} />
       )}
     </div>
   )

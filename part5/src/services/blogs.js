@@ -18,4 +18,10 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, create, update }
+const remove = (id, token) => {
+  return axios.delete(`${baseUrl}/${id}`,{
+    headers: { authorization: `Bearer ${token}` }
+  });
+};
+
+export default { getAll, create, update, remove }

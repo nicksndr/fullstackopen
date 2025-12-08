@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 const sampleBlog = {
   id: '64b6b8f2c42f9b5ac1234567',
@@ -77,4 +78,32 @@ test('after clicking the button, url and like is visible', async () => {
   await user.click(button)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
+test('<BlogForm /> calls onSubmit with correct data', async () => {
+  const mockOnSubmit = vi.fn()
+  const user = userEvent.setup()
+
+  render(
+    <BlogForm
+      onSubmit={mockOnSubmit}
+      title=""
+      author=""
+      url=""
+      handleTitleChange={() => {}}
+      handleAuthorChange={() => {}}
+      handleUrlChange={() => {}}
+    />
+  )
+
+  const inputs = screen.getAllByRole('textbox')
+  const createButton = screen.getByText('Create')
+
+  await user.type(inputs[0], 'New Blog Title')
+  await user.type(inputs[1], 'Jane Doe')
+  await user.type(inputs[2], 'https://example.com')
+
+  await user.click(createButton)
+
+  expect(mockOnSubmit.mock.calls).toHaveLength(1)
 })

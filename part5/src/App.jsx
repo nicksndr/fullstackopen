@@ -165,7 +165,7 @@ const App = () => {
       }}>logout</button>
 
       <Togglable buttonLabel="create new blog">
-        {/* crete button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
+        {/* create button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
         <BlogForm
           onSubmit={handleSubmit}
           title={title}

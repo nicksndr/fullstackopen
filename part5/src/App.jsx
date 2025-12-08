@@ -12,7 +12,7 @@ const App = () => {
   // const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({ username, password })
       setUser(user)
@@ -75,11 +75,11 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject, user.token)
       setBlogs(blogs.concat(newBlog))
-      setTitle('');
-      setAuthor('');
-      setUrl('');
-      setSuccessMessage(`a new blog '${title}' by '${author}' added`);
-      setTimeout(() => setSuccessMessage(null), 5000);
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setSuccessMessage(`a new blog '${title}' by '${author}' added`)
+      setTimeout(() => setSuccessMessage(null), 5000)
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Error adding blog'
       setErrorMessage(errorMessage)
@@ -100,25 +100,25 @@ const App = () => {
     }
 
     blogService
-    .update(blog.id, newBlog)
-    .then(newBlog => {
-      setBlogs(blogs.map(b => b.id !== newBlog.id ? b : newBlog));
-    })
+      .update(blog.id, newBlog)
+      .then(newBlog => {
+        setBlogs(blogs.map(b => b.id !== newBlog.id ? b : newBlog))
+      })
 
-    return; // Important: exit the function after update
+    return // Important: exit the function after update
   }
 
   const removeBlog = async (blog) => {
 
-    if (!window.confirm(`Remove ${blog.title} by ${blog.author}`)) return;
+    if (!window.confirm(`Remove ${blog.title} by ${blog.author}`)) return
 
     blogService
-    .remove(blog.id, user.token)
-    .then(() => {
-      setBlogs(blogs.filter(b => b.id !== blog.id));
-    })
+      .remove(blog.id, user.token)
+      .then(() => {
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+      })
 
-    return;
+    return
   }
 
   if (user === null) {
@@ -155,33 +155,33 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2> 
-      {errorMessage && <div className={"error"}>{errorMessage}</div>}      {/* works like condition && doSomething(), successMesssage set to null again after the time out */}
-      {successMessage && <div className={"success"}>{successMessage}</div>}
+      <h2>blogs</h2>
+      {errorMessage && <div className={'error'}>{errorMessage}</div>}      {/* works like condition && doSomething(), successMesssage set to null again after the time out */}
+      {successMessage && <div className={'success'}>{successMessage}</div>}
       <p>{user.name} logged in</p>
       <button onClick={() => {
         window.localStorage.removeItem('loggedInUser')
         setUser(null)
       }}>logout</button>
 
-    <Togglable buttonLabel="create new blog">
-      {/* crete button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
-      <BlogForm
-        onSubmit={handleSubmit}
-        title={title}
-        author={author}
-        url={url}
-        handleTitleChange={({ target }) => setTitle(target.value)}
-        handleAuthorChange={({ target }) => setAuthor(target.value)}
-        handleUrlChange={({ target }) => setUrl(target.value)}
-      />
-    </Togglable>
+      <Togglable buttonLabel="create new blog">
+        {/* crete button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
+        <BlogForm
+          onSubmit={handleSubmit}
+          title={title}
+          author={author}
+          url={url}
+          handleTitleChange={({ target }) => setTitle(target.value)}
+          handleAuthorChange={({ target }) => setAuthor(target.value)}
+          handleUrlChange={({ target }) => setUrl(target.value)}
+        />
+      </Togglable>
 
       {blogs
-      .sort((a, b) => b.likes - a.likes)
-      .map(blog =>
-        <Blog key={blog.id} blog={blog} onClick={() => likeButton(blog)} remove={() => removeBlog(blog)} />
-      )}
+        .sort((a, b) => b.likes - a.likes)
+        .map(blog =>
+          <Blog key={blog.id} blog={blog} onClick={() => likeButton(blog)} remove={() => removeBlog(blog)} />
+        )}
     </div>
   )
 }

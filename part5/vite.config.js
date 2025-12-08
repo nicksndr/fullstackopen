@@ -13,5 +13,10 @@ export default defineConfig({
         ws: true //Enables WebSocket support and can improve how the proxy handles connections
       }
     }
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './testSetup.js', 
   }
 })

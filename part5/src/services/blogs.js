@@ -21,7 +21,7 @@ const update = (id, newObject) => {
 const remove = (id, token) => {
   return axios.delete(`${baseUrl}/${id}`,{
     headers: { authorization: `Bearer ${token}` }
-  });
-};
+  })
+}
 
 export default { getAll, create, update, remove }

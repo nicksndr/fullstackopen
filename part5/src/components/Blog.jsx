@@ -6,7 +6,7 @@ const Blog = ({ blog, onClick, remove }) => {
 
   const hideWhenVisible = { display: contentVisible ? 'none' : '' }
   const showWhenVisible = { display: contentVisible ? '' : 'none' }
-  
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -18,7 +18,8 @@ const Blog = ({ blog, onClick, remove }) => {
   return (
     <div style={blogStyle}>
       <div style={hideWhenVisible}>
-        {blog.title}
+        {blog.title}<br/>
+        {blog.author}
         <button onClick={() => setContentVisible(true)}>view</button>
       </div>
 
@@ -26,11 +27,11 @@ const Blog = ({ blog, onClick, remove }) => {
         {blog.title}
         <button onClick={() => setContentVisible(false)}>hide</button><br/>
         {blog.url}<br/>
-        {"likes "}{blog.likes} <button onClick={onClick}>like</button><br/>
+        {'likes '}{blog.likes} <button onClick={onClick}>like</button><br/>
         {blog.author}<br/>
         <button onClick={remove}>remove</button>
       </div>
-    </div>  
-)}
+    </div>
+  )}
 
 export default Blog

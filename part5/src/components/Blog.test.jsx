@@ -39,21 +39,42 @@ test('renders title and author but hides url and likes by default', () => {
 })
 
 test('after clicking the button, url and like is visible', async () => {
-    render(
-        <Blog
-          blog={sampleBlog}
-          onClick={() => {}}
-          remove={() => {}}
-        />
-      )
+  render(
+    <Blog
+      blog={sampleBlog}
+      onClick={() => {}}
+      remove={() => {}}
+    />
+  )
 
-    const user = userEvent.setup()
-    const button = screen.getByText('view', { exact: false })
-    await user.click(button)
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
 
-    const urlElements = screen.getAllByText(sampleBlog.url, { exact: false })
-    const likesElements = screen.getAllByText(`likes ${sampleBlog.likes}`, { exact: false })
+  const urlElements = screen.getAllByText(sampleBlog.url, { exact: false })
+  const likesElements = screen.getAllByText(`likes ${sampleBlog.likes}`, { exact: false })
 
-    expect(urlElements[0]).toBeVisible()
-    expect(likesElements[0]).toBeVisible()
+  expect(urlElements[0]).toBeVisible()
+  expect(likesElements[0]).toBeVisible()
+})
+
+test('after clicking the button, url and like is visible', async () => {
+
+  const mockHandler = vi.fn()
+
+  render(
+    <Blog
+      blog={sampleBlog}
+      onClick={mockHandler}
+      remove={() => {}}
+    />
+  )
+
+
+  const user = userEvent.setup()
+  const button = screen.getByText('like')
+  await user.click(button)
+  await user.click(button)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
 })

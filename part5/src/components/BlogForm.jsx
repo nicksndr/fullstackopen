@@ -5,7 +5,7 @@ const BlogForm = ({
   url,
   handleTitleChange,
   handleAuthorChange,
-  handleUrlChange
+  handleUrlChange,
 }) => {
   return (
     <div>
@@ -13,25 +13,19 @@ const BlogForm = ({
 
       <form onSubmit={onSubmit}>
         <div>
-          Title:{' '}
-          <input
-            value={title}
-            onChange={handleTitleChange}
-          />
+          <label>
+            Title: <input value={title} onChange={handleTitleChange} />
+          </label>
         </div>
         <div>
-          Author:{' '}
-          <input
-            value={author}
-            onChange={handleAuthorChange}
-          />
+          <label>
+            Author: <input value={author} onChange={handleAuthorChange} />
+          </label>
         </div>
         <div>
-          Url:{' '}
-          <input
-            value={url}
-            onChange={handleUrlChange}
-          />
+          <label>
+            Url: <input value={url} onChange={handleUrlChange} />
+          </label>
         </div>
         <button type="submit">Create</button>
       </form>

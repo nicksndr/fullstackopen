@@ -75,12 +75,60 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'Create' }).click()
       await expect(page.getByText('Test Blog')).toBeVisible()
       
-      // Then like it
+      // Open the blog details
+      await page.getByRole('button', { name: 'view' }).click()
+      
+      // Set up dialog handler before clicking remove
+      page.once('dialog', async dialog => {
+        expect(dialog.type()).toBe('confirm')
+        expect(dialog.message()).toBe('Remove Test Blog by Test Author')
+        await dialog.accept()
+      })
+      
       await page.getByRole('button', { name: 'remove' }).click()
-      expect(dialog.type()).toBe('confirm');
-      expect(dialog.message()).toBe('Are you sure?');
-      await dialog.accept(); // clicks "OK"
       await expect(page.getByText('Test Blog')).not.toBeVisible()
+    })
+
+    test('only user who created the blog sees the delete button', async ({ page, request }) => {
+      // First create a blog as mluukkai
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await page.getByLabel(/title/i).fill('Test Blog')
+      await page.getByLabel(/author/i).fill('Test Author')
+      await page.getByLabel(/url/i).fill('https://test.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+      await expect(page.getByText('Test Blog')).toBeVisible()
+      
+      // Verify the creator can see the remove button
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.getByRole('button', { name: 'remove' })).toBeVisible()
+      
+      // Logout
+      await page.getByRole('button', { name: 'logout' }).click()
+      await expect(page.getByText('Log in to application')).toBeVisible()
+      
+      // Create a second user
+      await request.post('http://localhost:3003/api/users', {
+        data: {
+          name: 'Another User',
+          username: 'anotheruser',
+          password: 'password123'
+        }
+      })
+      
+      // Login as the second user
+      await page.getByLabel('username').fill('anotheruser')
+      await page.getByLabel('password').fill('password123')
+      await page.getByRole('button', { name: 'login' }).click()
+      await expect(page.getByText('Another User logged in')).toBeVisible()
+      
+      // Verify the blog is still visible
+      await expect(page.getByText('Test Blog')).toBeVisible()
+      
+      // Open the blog details
+      await page.getByRole('button', { name: 'view' }).click()
+      
+      // Verify the remove button is NOT visible for the second user
+      await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
     })
   })
 

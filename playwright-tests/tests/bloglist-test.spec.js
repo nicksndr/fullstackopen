@@ -130,6 +130,65 @@ describe('Blog app', () => {
       // Verify the remove button is NOT visible for the second user
       await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
     })
+
+    test('blogs are arranged in order according to likes, most likes first', async ({ page }) => {
+      // Create first blog
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await page.getByLabel(/title/i).fill('Blog with 2 likes')
+      await page.getByLabel(/author/i).fill('Author 1')
+      await page.getByLabel(/url/i).fill('https://test1.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+      await expect(page.getByText('Blog with 2 likes')).toBeVisible()
+
+      // Create second blog
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await page.getByLabel(/title/i).fill('Blog with 0 likes')
+      await page.getByLabel(/author/i).fill('Author 2')
+      await page.getByLabel(/url/i).fill('https://test2.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+      await expect(page.getByText('Blog with 0 likes')).toBeVisible()
+
+      // Create third blog
+      await page.getByRole('button', { name: 'create new blog' }).click()
+      await page.getByLabel(/title/i).fill('Blog with 1 like')
+      await page.getByLabel(/author/i).fill('Author 3')
+      await page.getByLabel(/url/i).fill('https://test3.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+      await expect(page.getByText('Blog with 1 like')).toBeVisible()
+
+      // Like "Blog with 1 like" once - find it by title, open it, like it
+      await page.getByText('Blog with 1 like').locator('..').getByRole('button', { name: 'view' }).first().click()
+      await page.getByText('Blog with 1 like').locator('..').getByRole('button', { name: 'like' }).first().click()
+      await expect(page.getByText(/likes 1/).first()).toBeVisible()
+      
+      // Like "Blog with 2 likes" twice
+      await page.getByText('Blog with 2 likes').locator('..').getByRole('button', { name: 'view' }).first().click()
+      // First like
+      await page.getByText('Blog with 2 likes').locator('..').getByRole('button', { name: 'like' }).first().click()
+      await page.waitForTimeout(300) // Wait for state update
+      // Second like
+      await page.getByText('Blog with 2 likes').locator('..').getByRole('button', { name: 'like' }).first().click()
+      await expect(page.getByText(/likes 2/).first()).toBeVisible()
+
+      // Wait for re-render after likes
+      await page.waitForTimeout(1000)
+
+      // Get all blog titles in the order they appear on the page
+      // Use evaluate to get the order of blog titles from the DOM
+      const blogOrder = await page.evaluate(() => {
+        const blogs = Array.from(document.querySelectorAll('div[style*="border"]'))
+        return blogs.map(blog => {
+          const text = blog.textContent || ''
+          if (text.includes('Blog with 2 likes')) return 'Blog with 2 likes'
+          if (text.includes('Blog with 1 like')) return 'Blog with 1 like'
+          if (text.includes('Blog with 0 likes')) return 'Blog with 0 likes'
+          return null
+        }).filter(Boolean)
+      })
+
+      // Verify the order: Blog with 2 likes, Blog with 1 like, Blog with 0 likes
+      expect(blogOrder).toEqual(['Blog with 2 likes', 'Blog with 1 like', 'Blog with 0 likes'])
+    })
   })
 
 })

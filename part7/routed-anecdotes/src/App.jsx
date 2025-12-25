@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   useParams,
+  useNavigate,
 } from "react-router-dom";
 
 const Menu = ({ anecdotes, addNew }) => {
@@ -18,10 +19,10 @@ const Menu = ({ anecdotes, addNew }) => {
           <Link style={padding} to="/">
             anecdotes
           </Link>
-          <Link style={padding} to="/notes">
+          <Link style={padding} to="/create">
             create new
           </Link>
-          <Link style={padding} to="/users">
+          <Link style={padding} to="/about">
             about
           </Link>
         </div>
@@ -29,14 +30,11 @@ const Menu = ({ anecdotes, addNew }) => {
         <Routes>
           <Route
             path="/anecdote/:id"
-            element={<Anecdote anecdote={anecdote} />}
+            element={<Anecdote anecdotes={anecdotes} />}
           />
-          <Route
-            path="/anecdote"
-            element={<AnecdoteList anecdotes={anecdotes} />}
-          />
-          <Route path="/users" element={<About />} />
-          <Route path="/" element={<CreateNew addNew={addNew} />} />
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/create" element={<CreateNew addNew={addNew} />} />
         </Routes>
       </Router>
     </div>
@@ -115,6 +113,8 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
@@ -123,6 +123,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate("/");
   };
 
   return (
@@ -160,6 +161,7 @@ const CreateNew = (props) => {
 };
 
 const App = () => {
+  const [successMessage, setSuccessMessage] = useState(null);
   const [anecdotes, setAnecdotes] = useState([
     {
       content: "If it hurts, do it more often",
@@ -182,6 +184,8 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setSuccessMessage(`A new anecdote '${anecdote.content}' created`);
+    setTimeout(() => setSuccessMessage(null), 5000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -200,6 +204,7 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
+      <div style={{ color: "blue" }}>{successMessage}</div>
       <Menu anecdotes={anecdotes} addNew={addNew} />
       <Footer />
     </div>

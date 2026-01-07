@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useParams,
-  useNavigate,
-} from "react-router-dom";
-import Blog from "./components/Blog";
-import Togglable from "./components/Togglable";
-import BlogForm from "./components/BlogForm";
+import { Routes, Route } from "react-router-dom";
+import BlogList from "./components/BlogList";
 import UserInformation from "./components/UserInformation";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -120,6 +111,11 @@ const App = () => {
     return;
   };
 
+  const handleLogout = () => {
+    window.localStorage.removeItem("loggedInUser");
+    setUser(null);
+  };
+
   if (user === null) {
     return (
       <div>
@@ -154,43 +150,30 @@ const App = () => {
 
   return (
     <div>
-      <Router>
-        <h2>blogs</h2>
-        {errorMessage && <div className={"error"}>{errorMessage}</div>}{" "}
-        {/* works like condition && doSomething(), successMesssage set to null again after the time out */}
-        {successMessage && <div className={"success"}>{successMessage}</div>}
-        <p>{user.name} logged in</p>
-        <button
-          onClick={() => {
-            window.localStorage.removeItem("loggedInUser");
-            setUser(null);
-          }}
-        >
-          logout
-        </button>
-        <Togglable buttonLabel="create new blog">
-          {/* create button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}
-          <BlogForm
-            onSubmit={handleSubmit}
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-          />
-        </Togglable>
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              onClick={() => likeButton(blog)}
-              remove={() => removeBlog(blog)}
+      <Routes>
+        <Route path="/users" element={<UserInformation blogs={blogs} />} />
+        <Route
+          path="/"
+          element={
+            <BlogList
+              blogs={blogs}
+              user={user}
+              errorMessage={errorMessage}
+              successMessage={successMessage}
+              title={title}
+              author={author}
+              url={url}
+              handleSubmit={handleSubmit}
+              handleTitleChange={({ target }) => setTitle(target.value)}
+              handleAuthorChange={({ target }) => setAuthor(target.value)}
+              handleUrlChange={({ target }) => setUrl(target.value)}
+              likeButton={likeButton}
+              removeBlog={removeBlog}
+              handleLogout={handleLogout}
             />
-          ))}
-      </Router>
+          }
+        />
+      </Routes>
     </div>
   );
 };

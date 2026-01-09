@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from "react-router-dom"
 
 const Blog = ({ blog, onClick, remove }) => {
 
@@ -17,7 +18,9 @@ const Blog = ({ blog, onClick, remove }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenVisible}>
+      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+      {/* Old implementation */}
+      {/* <div style={hideWhenVisible}>
         {blog.title}<br/>
         {blog.author}
         <button onClick={() => setContentVisible(true)}>view</button>
@@ -30,7 +33,7 @@ const Blog = ({ blog, onClick, remove }) => {
         {'likes '}{blog.likes} <button onClick={onClick}>like</button><br/>
         {blog.author}<br/>
         <button onClick={remove}>remove</button>
-      </div>
+      </div> */}
     </div>
   )}
 

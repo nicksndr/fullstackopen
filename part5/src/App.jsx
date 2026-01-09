@@ -119,6 +119,7 @@ const App = () => {
   const UserBloglist = ({ blogs }) => {
     //useParams to get ID out of URL
     const { id } = useParams();
+    // blog.user check if blog has user property
     const userBlogs = blogs.filter((blog) => blog.user && blog.user.id === id);
     const userName =
       userBlogs.length > 0 ? userBlogs[0].user.name : "Unknown User";
@@ -132,6 +133,16 @@ const App = () => {
             <li key={blog.id}>{blog.title}</li>
           ))}
         </ul>
+      </div>
+    );
+  };
+
+  const BlogView = ({ blogs }) => {
+    const { id } = useParams();
+
+    return (
+      <div>
+        
       </div>
     );
   };
@@ -173,6 +184,7 @@ const App = () => {
       <Routes>
         <Route path="/users" element={<UserInformation blogs={blogs} />} />
         <Route path="/users/:id" element={<UserBloglist blogs={blogs} />} />
+        <Route path="/blogs/:id" element={<BlogView blogs={blogs} />} />
         <Route
           path="/"
           element={

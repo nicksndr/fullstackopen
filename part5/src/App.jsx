@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link, useParams } from "react-router-dom";
 import BlogList from "./components/BlogList";
 import UserInformation from "./components/UserInformation";
 import blogService from "./services/blogs";
@@ -116,6 +116,26 @@ const App = () => {
     setUser(null);
   };
 
+  const UserBloglist = ({ blogs }) => {
+    //useParams to get ID out of URL
+    const { id } = useParams();
+    const userBlogs = blogs.filter((blog) => blog.user && blog.user.id === id);
+    const userName =
+      userBlogs.length > 0 ? userBlogs[0].user.name : "Unknown User";
+
+    return (
+      <div>
+        <h2>{userName}</h2>
+        <h3>Added blogs</h3>
+        <ul>
+          {userBlogs.map((blog) => (
+            <li key={blog.id}>{blog.title}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   if (user === null) {
     return (
       <div>
@@ -152,6 +172,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/users" element={<UserInformation blogs={blogs} />} />
+        <Route path="/users/:id" element={<UserBloglist blogs={blogs} />} />
         <Route
           path="/"
           element={

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const UserInformation = ({ blogs }) => {
   const userBlogCounts = Object.values(
     blogs.reduce((acc, blog) => {
@@ -25,16 +27,22 @@ const UserInformation = ({ blogs }) => {
       <h2>Users</h2>
 
       <table>
-        <tr>
-          <th>Name</th>
-          <th>Blogs created</th>
-        </tr>
-        {userBlogCounts.map((user) => (
+        <thead>
           <tr>
-            <td>{user.name}</td>
-            <td>{user.blogs}</td>
+            <th>Name</th>
+            <th>Blogs created</th>
           </tr>
-        ))}
+        </thead>
+        <tbody>
+          {userBlogCounts.map((user) => (
+            <tr key={user.id}>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
+              <td>{user.blogs}</td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );

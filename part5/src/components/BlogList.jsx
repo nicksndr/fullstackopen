@@ -12,9 +12,9 @@ const BlogList = ({
   handleSubmit,
   handleTitleChange,
   handleAuthorChange,
-  handleUrlChange,
-  likeButton,
-  removeBlog
+  handleUrlChange
+  // likeButton,
+  // removeBlog,
 }) => {
   return (
     <div>
@@ -39,12 +39,13 @@ const BlogList = ({
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            onClick={() => likeButton(blog)}
-            remove={() => removeBlog(blog)}
-          />
+          // <Blog
+          //   key={blog.id}
+          //   blog={blog}
+          //   onClick={() => likeButton(blog)}
+          //   remove={() => removeBlog(blog)}
+          // />
+          <Blog key={blog.id} blog={blog} />
         ))}
     </div>
   );

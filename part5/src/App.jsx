@@ -33,8 +33,8 @@ const App = () => {
   }, []);
 
   const padding = {
-    padding: 5
-  }
+    padding: 5,
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -115,6 +115,8 @@ const App = () => {
     return;
   };
 
+  void removeBlog;
+
   const handleLogout = () => {
     window.localStorage.removeItem("loggedInUser");
     setUser(null);
@@ -143,10 +145,23 @@ const App = () => {
 
   const BlogView = ({ blogs }) => {
     const { id } = useParams();
+    const blog = blogs.find((b) => b.id === id);
+
+    if (!blog) {
+      return <div>Blog not found</div>;
+    }
 
     return (
       <div>
-
+        <h2>{blog.title}</h2>
+        <div>
+          <a href={blog.url}>{blog.url}</a>
+        </div>
+        <div>
+          {"likes "}
+          {blog.likes} <button onClick={() => likeButton(blog)}>like</button>
+        </div>
+        <div>added by {blog.author}</div>
       </div>
     );
   };
@@ -186,10 +201,15 @@ const App = () => {
   return (
     <div>
       <div>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/blogs">blogs</Link>
-        <Link style={padding} to="/users">users</Link>
-        <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+        <p>
+          {user.name} logged in <button onClick={handleLogout}>logout</button>
+        </p>
       </div>
 
       <Routes>
@@ -210,8 +230,6 @@ const App = () => {
               handleTitleChange={({ target }) => setTitle(target.value)}
               handleAuthorChange={({ target }) => setAuthor(target.value)}
               handleUrlChange={({ target }) => setUrl(target.value)}
-              likeButton={likeButton}
-              removeBlog={removeBlog}
             />
           }
         />

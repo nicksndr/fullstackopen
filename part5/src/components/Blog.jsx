@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-const Blog = ({ blog, onClick, remove }) => {
+// const Blog = ({ blog, onClick, remove }) => {
+const Blog = ({ blog }) => {
+  const [contentVisible, setContentVisible] = useState(false);
 
-  const [contentVisible, setContentVisible] = useState(false)
-
-  const hideWhenVisible = { display: contentVisible ? 'none' : '' }
-  const showWhenVisible = { display: contentVisible ? '' : 'none' }
+  const hideWhenVisible = { display: contentVisible ? "none" : "" };
+  const showWhenVisible = { display: contentVisible ? "" : "none" };
 
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: 'solid',
+    border: "solid",
     borderWidth: 1,
-    marginBottom: 5
-  }
+    marginBottom: 5,
+  };
 
   return (
     <div style={blogStyle}>
@@ -35,6 +35,7 @@ const Blog = ({ blog, onClick, remove }) => {
         <button onClick={remove}>remove</button>
       </div> */}
     </div>
-  )}
+  );
+};
 
-export default Blog
+export default Blog;

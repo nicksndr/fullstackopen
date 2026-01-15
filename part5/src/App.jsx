@@ -32,6 +32,10 @@ const App = () => {
     }
   }, []);
 
+  const padding = {
+    padding: 5
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -142,7 +146,7 @@ const App = () => {
 
     return (
       <div>
-        
+
       </div>
     );
   };
@@ -181,6 +185,13 @@ const App = () => {
 
   return (
     <div>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/blogs">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+        <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+      </div>
+
       <Routes>
         <Route path="/users" element={<UserInformation blogs={blogs} />} />
         <Route path="/users/:id" element={<UserBloglist blogs={blogs} />} />
@@ -190,7 +201,6 @@ const App = () => {
           element={
             <BlogList
               blogs={blogs}
-              user={user}
               errorMessage={errorMessage}
               successMessage={successMessage}
               title={title}
@@ -202,7 +212,6 @@ const App = () => {
               handleUrlChange={({ target }) => setUrl(target.value)}
               likeButton={likeButton}
               removeBlog={removeBlog}
-              handleLogout={handleLogout}
             />
           }
         />

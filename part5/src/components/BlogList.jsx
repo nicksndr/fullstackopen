@@ -4,7 +4,6 @@ import BlogForm from "./BlogForm";
 
 const BlogList = ({
   blogs,
-  user,
   errorMessage,
   successMessage,
   title,
@@ -15,8 +14,7 @@ const BlogList = ({
   handleAuthorChange,
   handleUrlChange,
   likeButton,
-  removeBlog,
-  handleLogout,
+  removeBlog
 }) => {
   return (
     <div>
@@ -24,8 +22,6 @@ const BlogList = ({
       {errorMessage && <div className={"error"}>{errorMessage}</div>}
       {/* works like condition && doSomething(), successMesssage set to null again after the time out */}
       {successMessage && <div className={"success"}>{successMessage}</div>}
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
 
       <Togglable buttonLabel="create new blog">
         {/* create button comes from the BlogForm submit button, the cancel button comes from the togglabel component */}

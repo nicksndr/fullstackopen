@@ -158,10 +158,20 @@ const App = () => {
           <a href={blog.url}>{blog.url}</a>
         </div>
         <div>
-          {"likes "}
+          {'likes '}
           {blog.likes} <button onClick={() => likeButton(blog)}>like</button>
         </div>
         <div>added by {blog.author}</div>
+        <h3>comments</h3>
+        {blog.comments && blog.comments.length > 0 ? (
+          <ul>
+            {blog.comments.map((comment) => (
+              <li key={comment.id}>{comment.text}</li>
+            ))}
+          </ul>
+        ) : (
+          <div>No comments for this blog post yet</div>
+        )}
       </div>
     );
   };

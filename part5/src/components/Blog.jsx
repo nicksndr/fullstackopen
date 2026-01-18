@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 // const Blog = ({ blog, onClick, remove }) => {
 const Blog = ({ blog }) => {
-  const [contentVisible, setContentVisible] = useState(false);
+  // const [contentVisible, setContentVisible] = useState(false);
 
-  const hideWhenVisible = { display: contentVisible ? "none" : "" };
-  const showWhenVisible = { display: contentVisible ? "" : "none" };
+  // const hideWhenVisible = { display: contentVisible ? "none" : "" };
+  // const showWhenVisible = { display: contentVisible ? "" : "none" };
 
   const blogStyle = {
     paddingTop: 10,

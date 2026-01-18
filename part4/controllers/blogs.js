@@ -1,18 +1,21 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
     
   // When using async/await syntax, Express will automatically call the error-handling middleware if an await statement throws an error or the awaited promise is rejected. 
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 }).populate('comments')
   
   response.json(blogs)
 })
   
   blogsRouter.get('/:id', async (request , response) => {
-    const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
+    // populate('user') tells Mongoose to replace the user ObjectId with the actual User document from the database.
+    // { username: 1, name: 1 } selects only those fields (projection), excluding sensitive fields like passwords.
+    const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 }).populate('comments')
 
     if (blog) {
       response.json(blog)
@@ -134,6 +137,31 @@ blogsRouter.get('/', async (request, response) => {
     await savedBlog.populate('user', { username: 1, name: 1 })
     
     response.status(201).json(savedBlog)
+  })
+
+  blogsRouter.post('/:id/comments', async(request, response) => {
+    const text = request.body.text
+    const blog = await Blog.findById(request.params.id)
+
+    if (!text) {
+      return response.status(400).json({ error: 'text not found' })
+    }
+
+    if (!blog) {
+        return response.status(404).json({ error: 'blog not found' })
+      }
+
+    const comment = new Comment({
+        text: text,
+        blog: blog._id
+      })
+  
+    const savedComment = await comment.save()
+    
+    blog.comments = blog.comments.concat(savedComment._id)
+    await blog.save()
+    
+    response.status(201).json(savedComment)
   })
 
 module.exports = blogsRouter

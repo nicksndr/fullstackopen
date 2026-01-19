@@ -18,6 +18,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -82,6 +83,27 @@ const App = () => {
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Error adding blog";
+      setErrorMessage(errorMessage);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  const handleCommentSubmit = async (id) => {
+
+    const commentObject = {
+      text: comment
+    };
+
+    try {
+      const newComment = await blogService.createComment(id, commentObject);
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+      setComment("");
+      setSuccessMessage(`new comment added`);
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error adding comment";
       setErrorMessage(errorMessage);
       setTimeout(() => {
         setErrorMessage(null);
@@ -163,6 +185,15 @@ const App = () => {
         </div>
         <div>added by {blog.author}</div>
         <h3>comments</h3>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleCommentSubmit(id); }}>
+          <div>
+            <label>
+              <input value={comment} onChange={({ target }) => setComment(target.value)} />          <button type="submit">add comment</button>
+            </label>
+          </div>
+        </form>
+
         {blog.comments && blog.comments.length > 0 ? (
           <ul>
             {blog.comments.map((comment) => (

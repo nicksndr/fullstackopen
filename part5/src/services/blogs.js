@@ -18,10 +18,15 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
+const createComment = (id, commentObject) => {
+  const request = axios.post(`${baseUrl}/${id}/comments`, commentObject)
+  return request.then(response => response.data)
+}
+
 const remove = (id, token) => {
   return axios.delete(`${baseUrl}/${id}`,{
     headers: { authorization: `Bearer ${token}` }
   })
 }
 
-export default { getAll, create, update, remove }
+export default { getAll, create, createComment,update, remove }

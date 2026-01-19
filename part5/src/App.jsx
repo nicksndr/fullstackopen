@@ -1,5 +1,22 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  TextField,
+  Box,
+  Alert,
+  Stack,
+  IconButton,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import { Logout as LogoutIcon } from "@mui/icons-material";
 import BlogList from "./components/BlogList";
 import UserInformation from "./components/UserInformation";
 import blogService from "./services/blogs";
@@ -33,9 +50,6 @@ const App = () => {
     }
   }, []);
 
-  const padding = {
-    padding: 5,
-  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -97,7 +111,7 @@ const App = () => {
     };
 
     try {
-      const newComment = await blogService.createComment(id, commentObject);
+      await blogService.createComment(id, commentObject);
       blogService.getAll().then((blogs) => setBlogs(blogs));
       setComment("");
       setSuccessMessage(`new comment added`);
@@ -153,110 +167,178 @@ const App = () => {
       userBlogs.length > 0 ? userBlogs[0].user.name : "Unknown User";
 
     return (
-      <div>
-        <h2>{userName}</h2>
-        <h3>Added blogs</h3>
-        <ul>
-          {userBlogs.map((blog) => (
-            <li key={blog.id}>{blog.title}</li>
-          ))}
-        </ul>
-      </div>
+      <Container sx={{ paddingTop: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {userName}
+        </Typography>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ marginTop: 2 }}>
+          Added blogs
+        </Typography>
+        {userBlogs.length > 0 ? (
+          <List>
+            {userBlogs.map((blog) => (
+              <ListItem key={blog.id} divider>
+                <ListItemText primary={blog.title} />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Alert severity="info">No blogs added yet</Alert>
+        )}
+      </Container>
     );
   };
 
-  const BlogView = ({ blogs }) => {
+  const BlogView = ({ blogs, comment, setComment, handleCommentSubmit, likeButton }) => {
     const { id } = useParams();
     const blog = blogs.find((b) => b.id === id);
 
     if (!blog) {
-      return <div>Blog not found</div>;
+      return (
+        <Container>
+          <Alert severity="error">Blog not found</Alert>
+        </Container>
+      );
     }
 
     return (
-      <div>
-        <h2>{blog.title}</h2>
-        <div>
-          <a href={blog.url}>{blog.url}</a>
-        </div>
-        <div>
-          {'likes '}
-          {blog.likes} <button onClick={() => likeButton(blog)}>like</button>
-        </div>
-        <div>added by {blog.author}</div>
-        <h3>comments</h3>
+      <Container sx={{ paddingTop: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          {blog.title}
+        </Typography>
+        
+        <Box sx={{ marginBottom: 2 }}>
+          <Typography variant="body1" gutterBottom>
+            <strong>URL:</strong>{" "}
+            <a href={blog.url} target="_blank" rel="noopener noreferrer">
+              {blog.url}
+            </a>
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 1 }}>
+            <Chip label={`${blog.likes} likes`} color="primary" />
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => likeButton(blog)}
+            >
+              Like
+            </Button>
+          </Box>
+          <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
+            Added by {blog.author}
+          </Typography>
+        </Box>
 
-        <form onSubmit={(e) => { e.preventDefault(); handleCommentSubmit(id); }}>
-          <div>
-            <label>
-              <input value={comment} onChange={({ target }) => setComment(target.value)} />          <button type="submit">add comment</button>
-            </label>
-          </div>
-        </form>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ marginTop: 3 }}>
+          Comments
+        </Typography>
+
+        <Box component="form" onSubmit={(e) => { e.preventDefault(); handleCommentSubmit(id); }} sx={{ marginBottom: 3 }}>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Add a comment"
+              value={comment}
+              onChange={({ target }) => setComment(target.value)}
+              fullWidth
+              size="small"
+            />
+            <Button type="submit" variant="contained" sx={{ minWidth: 120 }}>
+              Add Comment
+            </Button>
+          </Stack>
+        </Box>
 
         {blog.comments && blog.comments.length > 0 ? (
-          <ul>
+          <List>
             {blog.comments.map((comment) => (
-              <li key={comment.id}>{comment.text}</li>
+              <ListItem key={comment.id} divider>
+                <ListItemText primary={comment.text} />
+              </ListItem>
             ))}
-          </ul>
+          </List>
         ) : (
-          <div>No comments for this blog post yet</div>
+          <Alert severity="info">No comments for this blog post yet</Alert>
         )}
-      </div>
+      </Container>
     );
   };
 
   if (user === null) {
     return (
-      <div>
-        <h2>Log in to application</h2>
-        {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
-        <form onSubmit={handleLogin}>
-          <div>
-            <label>
-              username
-              <input
-                type="text"
-                value={username}
-                onChange={({ target }) => setUsername(target.value)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              password
-              <input
-                type="password"
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
-              />
-            </label>
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+      <Container maxWidth="sm" sx={{ marginTop: 8 }}>
+        <Typography variant="h4" component="h1" gutterBottom align="center">
+          Log in to application
+        </Typography>
+        {errorMessage && (
+          <Alert severity="error" sx={{ marginBottom: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
+        <Box component="form" onSubmit={handleLogin}>
+          <Stack spacing={2}>
+            <TextField
+              label="Username"
+              value={username}
+              onChange={({ target }) => setUsername(target.value)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+              fullWidth
+              required
+            />
+            <Button type="submit" variant="contained" fullWidth size="large">
+              Login
+            </Button>
+          </Stack>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div>
-      <div>
-        <Link style={padding} to="/">
-          blogs
-        </Link>
-        <Link style={padding} to="/users">
-          users
-        </Link>
-        <p>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </p>
-      </div>
+    <Box>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button color="inherit" component={Link} to="/">
+            Blogs
+          </Button>
+          <Button color="inherit" component={Link} to="/users">
+            Users
+          </Button>
+          <Chip
+            label={user.name}
+            color="secondary"
+            sx={{ marginX: 2 }}
+          />
+          <IconButton color="inherit" onClick={handleLogout} aria-label="logout">
+            <LogoutIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
 
       <Routes>
         <Route path="/users" element={<UserInformation blogs={blogs} />} />
         <Route path="/users/:id" element={<UserBloglist blogs={blogs} />} />
-        <Route path="/blogs/:id" element={<BlogView blogs={blogs} />} />
+        <Route
+          path="/blogs/:id"
+          element={
+            <BlogView
+              blogs={blogs}
+              comment={comment}
+              setComment={setComment}
+              handleCommentSubmit={handleCommentSubmit}
+              likeButton={likeButton}
+            />
+          }
+        />
         <Route
           path="/"
           element={
@@ -275,7 +357,7 @@ const App = () => {
           }
         />
       </Routes>
-    </div>
+    </Box>
   );
 };
 

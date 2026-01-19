@@ -1,4 +1,15 @@
 import { Link } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Box,
+  Typography,
+} from "@mui/material";
 
 const UserInformation = ({ blogs }) => {
   const userBlogCounts = Object.values(
@@ -23,28 +34,41 @@ const UserInformation = ({ blogs }) => {
     }, {})
   );
   return (
-    <div>
-      <h2>Users</h2>
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        Users
+      </Typography>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userBlogCounts.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </td>
-              <td>{user.blogs}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <strong>Name</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Blogs created</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {userBlogCounts.map((user) => (
+              <TableRow key={user.id} hover>
+                <TableCell>
+                  <Link
+                    to={`/users/${user.id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    {user.name}
+                  </Link>
+                </TableCell>
+                <TableCell align="right">{user.blogs}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 

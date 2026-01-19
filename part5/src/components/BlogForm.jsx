@@ -1,3 +1,11 @@
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
+
 const BlogForm = ({
   onSubmit,
   title,
@@ -8,29 +16,40 @@ const BlogForm = ({
   handleUrlChange,
 }) => {
   return (
-    <div>
-      <h2>Create new blog</h2>
+    <Box sx={{ marginTop: 2, marginBottom: 2 }}>
+      <Typography variant="h5" component="h2" gutterBottom>
+        Create new blog
+      </Typography>
 
       <form onSubmit={onSubmit}>
-        <div>
-          <label>
-            Title: <input value={title} onChange={handleTitleChange} />
-          </label>
-        </div>
-        <div>
-          <label>
-            Author: <input value={author} onChange={handleAuthorChange} />
-          </label>
-        </div>
-        <div>
-          <label>
-            Url: <input value={url} onChange={handleUrlChange} />
-          </label>
-        </div>
-        <button type="submit">Create</button>
+        <Stack spacing={2}>
+          <TextField
+            label="Title"
+            value={title}
+            onChange={handleTitleChange}
+            fullWidth
+            required
+          />
+          <TextField
+            label="Author"
+            value={author}
+            onChange={handleAuthorChange}
+            fullWidth
+          />
+          <TextField
+            label="URL"
+            value={url}
+            onChange={handleUrlChange}
+            fullWidth
+            required
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Create
+          </Button>
+        </Stack>
       </form>
-    </div>
-  )
-}
+    </Box>
+  );
+};
 
 export default BlogForm

@@ -1,5 +1,6 @@
 const calculateBmi = (height: number, weight: number,) : string => {
-    const bmi = weight / (height * height)
+    const heightInMeters = height / 100
+    const bmi = weight / (heightInMeters * heightInMeters)
 
     if(bmi < 18.5) {
         return 'Underweight'

@@ -11,5 +11,8 @@
     "ts-node": "ts-node",
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10"
   }
 }

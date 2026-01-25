@@ -33,18 +33,23 @@ const calculateBmi = (height: number, weight: number,): string => {
     if (bmi >= 30) {
         return 'Obesity'
     }
+    return 'Invalid BMI';
 }
 
-try {
-    const { value1, value2 } = parseArguments(process.argv);
-    console.log(calculateBmi(value1, value2))
-} catch (error: unknown) {
-    let errorMessage = 'Something went wrong: '
-    if (error instanceof Error) {
-        errorMessage += error.message;
+if (require.main === module){
+    try {
+        const { value1, value2 } = parseArguments(process.argv);
+        console.log(calculateBmi(value1, value2))
+    } catch (error: unknown) {
+        let errorMessage = 'Something went wrong: '
+        if (error instanceof Error) {
+            errorMessage += error.message;
+        }
+        console.log(errorMessage);
     }
-    console.log(errorMessage);
 }
+
+export default calculateBmi;
 
 
 

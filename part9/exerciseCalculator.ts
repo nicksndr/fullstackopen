@@ -1,11 +1,11 @@
 interface exerciseSummary {
-    value1: number;
-    value2: number;
-    value3: boolean;
-    value4: number;
-    value5: string;
-    value6: number;
-    value7: number;
+    periodLength: number;
+    trainingDays: number;
+    success: boolean;
+    rating: number;
+    ratingDescription: string;
+    target: number;
+    average: number;
 }
 
 interface exerciseValues {
@@ -33,33 +33,38 @@ const calculateExercises = (target: number, args: number[]): exerciseSummary => 
     const periodLength = args.length
     const trainingDays = args.filter(day => day > 0).length
     const average = args.reduce((a, b) => a + b, 0) / args.length
-    const success = target <= average ? true : false
+    const success = average >= target
     const ratio = average / target
     const rating = ratio >= 1 ? 3 : ratio >= 0.5 ? 2 : 1
     const ratingDescription = ratio >= 1 ? 'You are doing great!' : ratio >= 0.5 ? 'You are doing ok' : 'You need to work more on your exercises'
 
     return {
-        value1: periodLength,
-        value2: trainingDays,
-        value3: success,
-        value4: rating,
-        value5: ratingDescription,
-        value6: target,
-        value7: average
+        periodLength,
+        trainingDays,
+        success,
+        rating,
+        ratingDescription,
+        target,
+        average
     }
 
 }
 
-try {
-    const { target, days } = parseArguments(process.argv);
-    console.log(calculateExercises(target, days));
-} catch (error: unknown) {
-    let errorMessage = 'Something went wrong: ';
-    if (error instanceof Error) {
-        errorMessage += error.message;
+if (require.main === module) {
+    try {
+        const { target, days } = parseArguments(process.argv);
+        console.log(calculateExercises(target, days));
+    } catch (error: unknown) {
+        let errorMessage = 'Something went wrong: ';
+        if (error instanceof Error) {
+            errorMessage += error.message;
+        }
+        console.log(errorMessage);
     }
-    console.log(errorMessage);
+
 }
+
+export default calculateExercises;
 
 //   try {
 //     console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))

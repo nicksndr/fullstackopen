@@ -6,7 +6,7 @@ interface exerciseSummary {
     value5: string;
     value6: number;
     value7: number;
-  }
+}
 
 interface exerciseValues {
     target: number;
@@ -29,7 +29,7 @@ const parseArguments = (args: string[]): exerciseValues => {
     };
 };
 
-  const calculateExercises = (target: number, args: number[]): exerciseSummary => {
+const calculateExercises = (target: number, args: number[]): exerciseSummary => {
     const periodLength = args.length
     const trainingDays = args.filter(day => day > 0).length
     const average = args.reduce((a, b) => a + b, 0) / args.length
@@ -48,7 +48,7 @@ const parseArguments = (args: string[]): exerciseValues => {
         value7: average
     }
 
-  }
+}
 
 try {
     const { target, days } = parseArguments(process.argv);

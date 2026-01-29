@@ -1,11 +1,29 @@
 import { NewPatientData } from './types';
 
-const toNewPatientEntry = (object: unknown): NewPatientData => {
-  const newEntry: NewPatientData = {
-    // ...
-  }
+// To Do add parsing for different types
 
-  return newEntry;
-}
+const parseString = (text: unknown): string => {
+    if (!text || typeof text !== 'string') {
+        throw new Error('Incorrect or missing text');
+    }
+    return text;
+};
+
+const toNewPatientEntry = (object: unknown): NewPatientData => {
+    if (!object || typeof object !== 'object') {
+        throw new Error('Incorrect or missing data');
+    }
+
+    if ('name' in object && 'occupation' in object && 'gender' in object) {
+        const newEntry: NewPatientData = {
+            name: parseString(object.name),
+            occupation: parseString(object.occupation),
+            gender: parseString(object.gender),
+            dateOfBirth: parseString(object.dateOfBirth),
+        };
+        return newEntry;
+    };
+    throw new Error('Incorrect data: some fields are missing');
+};
 
 export default toNewPatientEntry;

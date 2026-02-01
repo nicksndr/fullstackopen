@@ -19,7 +19,7 @@ const toNewPatientEntry = (object: unknown): NewPatientData => {
             name: parseString(object.name),
             occupation: parseString(object.occupation),
             gender: parseString(object.gender),
-            dateOfBirth: parseString(object.dateOfBirth),
+            ...('dateOfBirth' in object && object.dateOfBirth !== undefined && { dateOfBirth: parseString(object.dateOfBirth) }),
         };
         return newEntry;
     };

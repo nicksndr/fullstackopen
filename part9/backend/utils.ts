@@ -1,42 +1,56 @@
 import { NewPatientData, Gender } from './types';
+import { z } from "zod";
 
-const isString = (text: unknown): text is string => {
-    return typeof text === 'string' || text instanceof String;
-};
+// Old manual validation approach (commented out)
+// const isString = (text: unknown): text is string => {
+//     return typeof text === 'string' || text instanceof String;
+// };
 
-const isGender = (param: string): param is Gender => {
-    return Object.values(Gender).includes(param as Gender);
-};
+// const parseString = (text: unknown): string => {
+//     if (!text || typeof text !== 'string') {
+//         throw new Error('Incorrect or missing text');
+//     }
+//     return text;
+// };
 
-const parseGender = (gender: unknown): Gender => {
-    if (!gender || !isString(gender) || !isGender(gender)) {
-        throw new Error('Incorrect or missing gender: ' + gender);
-    }
-    return gender;
-};
+// const isGender = (param: string): param is Gender => {
+//     return Object.values(Gender).includes(param as Gender);
+// };
 
-const parseString = (text: unknown): string => {
-    if (!text || typeof text !== 'string') {
-        throw new Error('Incorrect or missing text');
-    }
-    return text;
-};
+// const parseGender = (gender: unknown): Gender => {
+//     if (!gender || !isString(gender) || !isGender(gender)) {
+//         throw new Error('Incorrect or missing gender: ' + gender);
+//     }
+//     return gender;
+// };
+
+// Zod schema for NewPatientData validation
+const NewPatientDataSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    occupation: z.string().min(1, 'Occupation is required'),
+    gender: z.enum(Gender),
+    dateOfBirth: z.string().optional(),
+});
 
 const toNewPatientEntry = (object: unknown): NewPatientData => {
-    if (!object || typeof object !== 'object') {
-        throw new Error('Incorrect or missing data');
-    }
+    // Old manual validation approach (commented out)
+    // if (!object || typeof object !== 'object') {
+    //     throw new Error('Incorrect or missing data');
+    // }
+    //
+    // if ('name' in object && 'occupation' in object && 'gender' in object) {
+    //     const newEntry: NewPatientData = {
+    //         name: parseString(object.name),
+    //         occupation: parseString(object.occupation),
+    //         gender: parseGender(object.gender),
+    //         ...('dateOfBirth' in object && object.dateOfBirth !== undefined && { dateOfBirth: parseString(object.dateOfBirth) }),
+    //     };
+    //     return newEntry;
+    // };
+    // throw new Error('Incorrect data: some fields are missing');
 
-    if ('name' in object && 'occupation' in object && 'gender' in object) {
-        const newEntry: NewPatientData = {
-            name: parseString(object.name),
-            occupation: parseString(object.occupation),
-            gender: parseGender(object.gender),
-            ...('dateOfBirth' in object && object.dateOfBirth !== undefined && { dateOfBirth: parseString(object.dateOfBirth) }),
-        };
-        return newEntry;
-    };
-    throw new Error('Incorrect data: some fields are missing');
+    // New Zod validation approach
+    return NewPatientDataSchema.parse(object);
 };
 
 export default toNewPatientEntry;

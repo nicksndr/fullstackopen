@@ -1,6 +1,19 @@
-import { NewPatientData } from './types';
+import { NewPatientData, Gender } from './types';
 
-// To Do add parsing for different types
+const isString = (text: unknown): text is string => {
+    return typeof text === 'string' || text instanceof String;
+};
+
+const isGender = (param: string): param is Gender => {
+    return Object.values(Gender).includes(param as Gender);
+};
+
+const parseGender = (gender: unknown): Gender => {
+    if (!gender || !isString(gender) || !isGender(gender)) {
+        throw new Error('Incorrect or missing gender: ' + gender);
+    }
+    return gender;
+};
 
 const parseString = (text: unknown): string => {
     if (!text || typeof text !== 'string') {
@@ -18,7 +31,7 @@ const toNewPatientEntry = (object: unknown): NewPatientData => {
         const newEntry: NewPatientData = {
             name: parseString(object.name),
             occupation: parseString(object.occupation),
-            gender: parseString(object.gender),
+            gender: parseGender(object.gender),
             ...('dateOfBirth' in object && object.dateOfBirth !== undefined && { dateOfBirth: parseString(object.dateOfBirth) }),
         };
         return newEntry;

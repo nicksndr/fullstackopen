@@ -1,36 +1,101 @@
 // Continue with exercise 9.16: create component part that renders...
-const courseName = "Half Stack application development";
-  interface CoursePartBase {
-    name: string;
-    exerciseCount: number;
-  }
-  
-  interface CoursePartWithDescription extends CoursePartBase {
-    description: string;
-  }
-  
-  interface CoursePartBasic extends CoursePartWithDescription {
-    kind: "basic"
-  }
-  
-  interface CoursePartGroup extends CoursePartBase {
-    groupProjectCount: number;
-    kind: "group"
-  }
-  
-  interface CoursePartBackground extends CoursePartWithDescription {
-    backgroundMaterial: string;
-    kind: "background"
-  }
 
-  interface CoursePartSpecial extends CoursePartWithDescription {
-    requirements : string[];
-    kind: "special"
+// Type definitions
+interface CoursePartBase {
+  name: string;
+  exerciseCount: number;
+}
+
+interface CoursePartWithDescription extends CoursePartBase {
+  description: string;
+}
+
+interface CoursePartBasic extends CoursePartWithDescription {
+  kind: "basic"
+}
+
+interface CoursePartGroup extends CoursePartBase {
+  groupProjectCount: number;
+  kind: "group"
+}
+
+interface CoursePartBackground extends CoursePartWithDescription {
+  backgroundMaterial: string;
+  kind: "background"
+}
+
+interface CoursePartSpecial extends CoursePartWithDescription {
+  requirements: string[];
+  kind: "special"
+}
+
+type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground | CoursePartSpecial;
+
+const Header = (props: { heading: string }) => {
+  return (
+    <h1>{props.heading}</h1>
+  );
+};
+
+const Part = (props: { part: CoursePart }) => {
+  switch (props.part.kind) {
+    case "basic":
+      return (
+        <div>
+          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
+          <p><i>{props.part.description}</i></p>
+        </div>
+      );
+    case "group":
+      return (
+        <div>
+          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
+          <p>project exercises {props.part.groupProjectCount}</p>
+        </div>
+      );
+    case "background":
+      return (
+        <div>
+          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
+          <p><i>{props.part.description}</i></p>
+          <p>submit to {props.part.backgroundMaterial}</p>
+        </div>
+      );
+    case "special":
+      return (
+        <div>
+          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
+          <p><i>{props.part.description}</i></p>
+          <p>required skills: {props.part.requirements.join(", ")}</p>
+        </div>
+      );
+    default:
+      return null;
   }
+};
+
+const Content = (props: { courseParts: CoursePart[] }) => {
+  return (
+    <div>
+      {props.courseParts.map(part => (
+        <Part key={part.name} part={part} />
+      ))}
+    </div>
+  );
+};
+
+
+const Total = (props: { totalExercises: number }) => {
+  return (
+    <p>
+      Number of exercises {props.totalExercises}
+    </p>
+  );
+};
+
+const App = () => {
+  const courseName = "Half Stack application development";
   
-  type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground | CoursePartSpecial;
-
-
   const courseParts: CoursePart[] = [
     {
       name: "Fundamentals",
@@ -73,75 +138,11 @@ const courseName = "Half Stack application development";
   ];
 
   const totalExercises = courseParts.reduce((sum, part) => sum + part.exerciseCount, 0);
-
-const Header = (props: { heading: string }) => {
-  return (
-    <h1>{props.heading}</h1>
-  );
-};
-
-// const Content = (props: { name: string, exerciseCount: number }) => {
-//   return (
-//     <p>
-//     {props.name} {props.exerciseCount}
-//   </p>
-//   );
-// };
-
-const Part = (props: { part: CoursePart }) => {
-  switch (props.part.kind) {
-    case "basic":
-      return (
-        <div>
-          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
-          <p><i>{props.part.description}</i></p>
-        </div>
-      );
-    case "group":
-      return (
-        <div>
-          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
-          <p>project exercises {props.part.groupProjectCount}</p>
-        </div>
-      );
-    case "background":
-      return (
-        <div>
-          <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
-          <p><i>{props.part.description}</i></p>
-          <p>submit to {props.part.backgroundMaterial}</p>
-        </div>
-      );
-      case "special":
-        return (
-          <div>
-            <p><strong>{props.part.name} {props.part.exerciseCount}</strong></p>
-            <p><i>{props.part.description}</i></p>
-            <p>submit to {props.part.backgroundMaterial}</p>
-          </div>
-        );
-    default:
-      return null;
-  }
-};
-
-
-const Total = (props: { totalExercises: number }) => {
-  return (
-    <p>
-      Number of exercises {props.totalExercises}
-    </p>
-  );
-};
-
-const App = () => {
   
   return (
     <div>
       <Header heading={courseName} />
-      {courseParts.map(part => (
-        <Part key={part.name} part={part} />
-      ))}
+      <Content courseParts={courseParts} />
       <Total totalExercises={totalExercises} />
     </div>
   );

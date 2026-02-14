@@ -10,12 +10,10 @@ const getAll = async (): Promise<NonSensitiveDiaryEntry[]> => {
   return data;
 };
 
-// const create = (newObject, token) => {
-//   const request = axios.post(baseUrl, newObject, {
-//     headers: { authorization: `Bearer ${token}` }
-//   })
-//   return request.then(response => response.data)
-// }
+const create = (newObject: NonSensitiveDiaryEntry) => {
+  const request = axios.post(baseUrl, newObject)
+  return request.then(response => response.data)
+}
 
 // const update = (id, newObject) => {
 //   const request = axios.put(`${baseUrl}/${id}`, newObject)
@@ -33,4 +31,4 @@ const getAll = async (): Promise<NonSensitiveDiaryEntry[]> => {
 //   })
 // }
 
-export default { getAll } //create, createComment,update, remove
+export default { getAll, create } //create, createComment,update, remove

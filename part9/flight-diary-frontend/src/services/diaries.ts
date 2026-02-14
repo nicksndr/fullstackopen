@@ -1,9 +1,9 @@
 import axios from 'axios'
-import type { DiaryEntry } from '../../types'
+import type { NonSensitiveDiaryEntry } from '../../types'
 const baseUrl = '/api/diaries'
 
-const getAll = async (): Promise<DiaryEntry[]> => {
-  const { data } = await axios.get<DiaryEntry[]>(
+const getAll = async (): Promise<NonSensitiveDiaryEntry[]> => {
+  const { data } = await axios.get<NonSensitiveDiaryEntry[]>(
     `${baseUrl}`
   );
 

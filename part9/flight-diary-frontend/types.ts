@@ -13,7 +13,7 @@ export enum Weather {
     Poor = 'poor',
   }
   
-  export interface DiaryEntry {
+  export type DiaryEntry = {
     id: number;
     date: string;
     weather: Weather;

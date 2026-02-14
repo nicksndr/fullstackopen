@@ -37,7 +37,7 @@ function App() {
     <div>
       <h1>Diary Entries</h1>
       <ul>
-        {diaries.map((diary: DiaryEntry) => (
+        {diaries.map((diary: NonSensitiveDiaryEntry) => (
           <div>
             <h3>{diary.date}</h3>
             <li>{diary.weather}</li>

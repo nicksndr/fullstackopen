@@ -1,8 +1,30 @@
 import { useState, useEffect } from "react";
-import type { NonSensitiveDiaryEntry, Visibility, Weather } from '../types.ts'
+import type { NonSensitiveDiaryEntry, NewDiaryEntry, DiaryEntry } from '../types.ts'
 import diaryService from "./services/diaries.ts";
 
-const DiaryForm = ({ newDate: string, newVisibility: Visibility, newWeather: Weather, newComment: string, handleDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void, handleVisibilityChange: (e: React.ChangeEvent<HTMLInputElement>) => void, handleWeatherChange: (e: React.ChangeEvent<HTMLInputElement>) => void, handleCommentChange: (e: React.ChangeEvent<HTMLInputElement>) => void, addDiary: (e: React.SyntheticEvent<HTMLFormElement>) => void }) => {
+interface DiaryFormProps {
+  newDate: string;
+  newVisibility: string;
+  newWeather: string;
+  newComment: string;
+  handleDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleVisibilityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleWeatherChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCommentChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  addDiary: (e: React.SyntheticEvent<HTMLFormElement>) => void;
+}
+
+const DiaryForm = ({ 
+  newDate, 
+  newVisibility, 
+  newWeather, 
+  newComment, 
+  handleDateChange, 
+  handleVisibilityChange, 
+  handleWeatherChange, 
+  handleCommentChange, 
+  addDiary 
+}: DiaryFormProps) => {
   return (
     <form onSubmit={addDiary}>
       <div>
@@ -21,8 +43,8 @@ const DiaryForm = ({ newDate: string, newVisibility: Visibility, newWeather: Wea
         <button type="submit">Add</button>
       </div>
     </form>
-  )
-}
+  );
+};
 
 
 
@@ -51,9 +73,23 @@ function App() {
 
   const addDiary = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    diaryService.create({ date: newDate, visibility: newVisibility as Visibility, weather: newWeather as Weather, comment: newComment })
-      .then((newDiary: NonSensitiveDiaryEntry) => {
-        setDiaries(diaries.concat(newDiary));
+    const newDiaryEntry: NewDiaryEntry = {
+      date: newDate,
+      visibility: newVisibility as NonSensitiveDiaryEntry['visibility'],
+      weather: newWeather as NonSensitiveDiaryEntry['weather'],
+      comment: newComment,
+    };
+    
+    diaryService.create(newDiaryEntry)
+      .then((createdDiary: DiaryEntry) => {
+        // Convert DiaryEntry to NonSensitiveDiaryEntry for display
+        const nonSensitiveEntry: NonSensitiveDiaryEntry = {
+          id: createdDiary.id,
+          date: createdDiary.date,
+          weather: createdDiary.weather,
+          visibility: createdDiary.visibility,
+        };
+        setDiaries(diaries.concat(nonSensitiveEntry));
         setNewDate('');
         setNewVisibility('');
         setNewWeather('');
@@ -62,7 +98,7 @@ function App() {
       .catch((error) => {
         console.error('Error adding diary:', error);
       });
-  }
+  };
 
 //   const fetchDiaries = async () => {
 //     try {

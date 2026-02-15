@@ -40,13 +40,31 @@ const DiaryForm = ({
   return (
     <form onSubmit={addDiary}>
       <div>
-        Date: <input value={newDate} onChange={handleDateChange} />
+        Date: <input type="date" value={newDate} onChange={handleDateChange} />
       </div>
       <div>
-        Visibility: <input value={newVisibility} onChange={handleVisibilityChange} />
+        Visibility: 
+        <input type="radio" id="visibility-great" name="visibility" value="great" checked={newVisibility === 'great'} onChange={handleVisibilityChange} />
+        <label htmlFor="visibility-great">Great</label>
+        <input type="radio" id="visibility-good" name="visibility" value="good" checked={newVisibility === 'good'} onChange={handleVisibilityChange} />
+        <label htmlFor="visibility-good">Good</label>
+        <input type="radio" id="visibility-ok" name="visibility" value="ok" checked={newVisibility === 'ok'} onChange={handleVisibilityChange} />
+        <label htmlFor="visibility-ok">Ok</label>
+        <input type="radio" id="visibility-poor" name="visibility" value="poor" checked={newVisibility === 'poor'} onChange={handleVisibilityChange} />
+        <label htmlFor="visibility-poor">Poor</label>
       </div>
       <div>
-        Weather: <input value={newWeather} onChange={handleWeatherChange} />
+        Weather: 
+        <input type="radio" id="weather-sunny" name="weather" value="sunny" checked={newWeather === 'sunny'} onChange={handleWeatherChange} />
+        <label htmlFor="weather-sunny">Sunny</label>
+        <input type="radio" id="weather-rainy" name="weather" value="rainy" checked={newWeather === 'rainy'} onChange={handleWeatherChange} />
+        <label htmlFor="weather-rainy">Rainy</label>
+        <input type="radio" id="weather-cloudy" name="weather" value="cloudy" checked={newWeather === 'cloudy'} onChange={handleWeatherChange} />
+        <label htmlFor="weather-cloudy">Cloudy</label>
+        <input type="radio" id="weather-stormy" name="weather" value="stormy" checked={newWeather === 'stormy'} onChange={handleWeatherChange} />
+        <label htmlFor="weather-stormy">Stormy</label>
+        <input type="radio" id="weather-windy" name="weather" value="windy" checked={newWeather === 'windy'} onChange={handleWeatherChange} />
+        <label htmlFor="weather-windy">Windy</label>
       </div>
       <div>
         Comment: <input value={newComment} onChange={handleCommentChange} />

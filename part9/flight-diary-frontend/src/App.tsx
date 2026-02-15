@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
 import type { NonSensitiveDiaryEntry, NewDiaryEntry, DiaryEntry } from '../types.ts'
 import diaryService from "./services/diaries.ts";
+import axios from "axios";
+import './App.css';
+
+const ErrorMessage = ({ message }: { message: string | null }) => {
+  if (message === null) return null;
+
+  return (
+    <div className="error">
+      {message}
+    </div>  
+  );
+};
 
 interface DiaryFormProps {
   newDate: string;
@@ -54,6 +66,7 @@ function App() {
   const [newVisibility, setNewVisibility] = useState('');
   const [newWeather, setNewWeather] = useState('');
   const [newComment, setNewComment] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     diaryService.getAll()
@@ -96,7 +109,23 @@ function App() {
         setNewComment('');
       })
       .catch((error) => {
-        console.error('Error adding diary:', error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.data && typeof error.response.data === 'string') {
+            // Backend sends error message as a string
+            const message = error.response.data.replace('Something went wrong. ', '');
+            setErrorMessage(message);
+          } else {
+            setErrorMessage('Unrecognized axios error');
+          }
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        } else {
+          setErrorMessage('Error adding diary: ' + String(error));
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        }
       });
   };
 
@@ -115,6 +144,7 @@ function App() {
   return (
     <div>
       <h2>Add new entry</h2>
+      <ErrorMessage message={errorMessage} />
         <DiaryForm 
         newDate={newDate} 
         newVisibility={newVisibility} 

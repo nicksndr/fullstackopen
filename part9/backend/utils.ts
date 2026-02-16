@@ -30,6 +30,7 @@ const NewPatientDataSchema = z.object({
     occupation: z.string().min(1, 'Occupation is required'),
     gender: z.enum(Gender),
     dateOfBirth: z.string().optional(),
+    entries: z.array(z.object({})),
 });
 
 const toNewPatientEntry = (object: unknown): NewPatientData => {

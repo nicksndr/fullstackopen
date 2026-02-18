@@ -24,13 +24,13 @@ import { z } from "zod";
 //     return gender;
 // };
 
-// Zod schema for NewPatientData validation
+// Zod schema for NewPatientData validation (entries validated as array of objects; for new patients typically empty)
 const NewPatientDataSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     occupation: z.string().min(1, 'Occupation is required'),
     gender: z.enum(Gender),
     dateOfBirth: z.string().optional(),
-    entries: z.array(z.object({})),
+    entries: z.array(z.record(z.string(), z.unknown())).default([]),
 });
 
 const toNewPatientEntry = (object: unknown): NewPatientData => {
@@ -50,8 +50,8 @@ const toNewPatientEntry = (object: unknown): NewPatientData => {
     // };
     // throw new Error('Incorrect data: some fields are missing');
 
-    // New Zod validation approach
-    return NewPatientDataSchema.parse(object);
+    // New Zod validation approach (entries accepted as object[]; cast to NewPatientData for type compatibility)
+    return NewPatientDataSchema.parse(object) as unknown as NewPatientData;
 };
 
 export default toNewPatientEntry;

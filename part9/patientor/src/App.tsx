@@ -21,9 +21,22 @@ const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
 
   return (
     <div>
-      <h3>{patient?.name}</h3>
+      <h2>{patient?.name}</h2>
       <p>occupation: {patient?.occupation}</p>
       <p>date of birth: {patient?.dateOfBirth}</p>
+      <br></br>
+      <h3>Entries</h3>
+      {patient?.entries.map((entry) => (
+        <div key={entry.id}>
+          <p>{entry.date}</p>
+          <p>{entry.description}</p>
+          <ul>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>{code}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };

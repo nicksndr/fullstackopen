@@ -14,6 +14,7 @@ import { Patient } from "./types";
 
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
+import diagnosisService from "./services/diagnoses";
 
 const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +33,7 @@ const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
           <p>{entry.description}</p>
           <ul>
             {entry.diagnosisCodes?.map((code) => (
-              <li key={code}>{code}</li>
+              <li key={code}>{code}{" " + diagnosisService.getDiagnosis(code)?.name}</li>
             ))}
           </ul>
         </div>

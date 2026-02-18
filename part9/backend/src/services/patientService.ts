@@ -2,7 +2,7 @@ import { Patient, NewPatientData } from '../../types';
 import patientsData from '../../data/patients';
 import { randomUUID } from 'crypto';
 
-const patients: Patient[] = patientsData as Patient[];
+const patients: Patient[] = patientsData;
 
 const getPatients = (): Patient[] => {
     return patients;

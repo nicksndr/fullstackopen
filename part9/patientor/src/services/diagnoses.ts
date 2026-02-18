@@ -8,7 +8,12 @@ const addDiagnosis = () => {
   return null;
 };
 
+const getDiagnosis = (code: string) => {
+  return diagnosesData.find((d) => d.code === code);
+};
+
 export default {
   getEntries,
-  addDiagnosis
+  addDiagnosis,
+  getDiagnosis
 };

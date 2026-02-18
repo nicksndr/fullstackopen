@@ -10,11 +10,46 @@ import {
 import { Button, Divider, Container, Typography } from "@mui/material";
 
 import { apiBaseUrl } from "./constants";
-import { Patient } from "./types";
+import { Patient, Entry } from "./types";
 
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
 import diagnosisService from "./services/diagnoses";
+
+const assertNever = (value: never): never => {
+  throw new Error(`Unhandled member: ${JSON.stringify(value)}`);
+};
+
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+  switch (entry.type) {
+    case "Hospital":
+      return (
+        <div>
+          <p>
+            discharge: {entry.discharge.date} - {entry.discharge.criteria}
+          </p>
+        </div>
+      );
+    case "OccupationalHealthcare":
+      return (
+        <div>
+          <p>employer: {entry.employerName}</p>
+          <p>
+            sick leave: {entry.sickLeave?.startDate} -{" "}
+            {entry.sickLeave?.endDate}
+          </p>
+        </div>
+      );
+    case "HealthCheck":
+      return (
+        <div>
+          <p>health check rating: {entry.healthCheckRating}</p>
+        </div>
+      );
+    default:
+      return assertNever(entry as never);
+  }
+};
 
 const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
   const { id } = useParams<{ id: string }>();
@@ -33,9 +68,13 @@ const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
           <p>{entry.description}</p>
           <ul>
             {entry.diagnosisCodes?.map((code) => (
-              <li key={code}>{code}{" " + diagnosisService.getDiagnosis(code)?.name}</li>
+              <li key={code}>
+                {code}
+                {" " + diagnosisService.getDiagnosis(code)?.name}
+              </li>
             ))}
           </ul>
+          <EntryDetails entry={entry} />
         </div>
       ))}
     </div>

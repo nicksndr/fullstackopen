@@ -1,5 +1,7 @@
-import { NewPatientData, Gender } from './types';
+import { NewPatientData, Gender, HealthCheckRating, Entry } from './types';
 import { z } from "zod";
+
+const entryTypeValues = ["HealthCheck", "Hospital", "OccupationalHealthcare"] as const;
 
 // Old manual validation approach (commented out)
 // const isString = (text: unknown): text is string => {
@@ -54,4 +56,26 @@ const toNewPatientEntry = (object: unknown): NewPatientData => {
     return NewPatientDataSchema.parse(object) as unknown as NewPatientData;
 };
 
-export default toNewPatientEntry;
+const NewEntryDataSchema = z.object({
+    description: z.string().min(1, 'Description is required'),
+    date: z.string().min(1, 'Date is required'),
+    specialist: z.string().min(1, 'Specialist is required'),
+    type: z.enum(entryTypeValues),
+    diagnosisCodes: z.array(z.string()).optional(),
+    healthCheckRating: z.enum(HealthCheckRating).optional(),
+    discharge: z.object({
+        date: z.string().min(1, 'Date is required'),
+        criteria: z.string().min(1, 'Criteria is required'),
+    }).optional(),
+    employerName: z.string().min(1, 'Employer name is required').optional(),
+    sickLeave: z.object({
+        startDate: z.string().min(1, 'Start date is required'),
+        endDate: z.string().min(1, 'End date is required'),
+    }).optional(),
+});
+
+const toNewEntry = (object: unknown): Entry => {
+    return NewEntryDataSchema.parse(object) as unknown as Entry;
+};
+
+export { toNewPatientEntry, toNewEntry };

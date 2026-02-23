@@ -67,3 +67,6 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+/** Entry data sent by client (no id); service adds id when saving. */
+export type NewEntryData = Omit<Entry, 'id'>;

@@ -1,4 +1,4 @@
-import { Patient, NewPatientData, Entry } from '../../types';
+import { Patient, NewPatientData, NewEntryData, Entry } from '../../types';
 import patientsData from '../../data/patients';
 import { randomUUID } from 'crypto';
 
@@ -18,11 +18,12 @@ const addPatient = (entry: NewPatientData): Patient => {
     return newPatientEntry;
 };
 
-const addPatientEntry = (id: string, entry: Entry): Patient => {
-    const patient = patients.find((p) => p.id === id);
+const addPatientEntry = (patientId: string, entryData: NewEntryData): Patient => {
+    const patient = patients.find((p) => p.id === patientId);
     if (!patient) {
         throw new Error('Patient not found');
     }
+    const entry: Entry = { ...entryData, id: randomUUID() } as Entry;
     patient.entries.push(entry);
     return patient;
 };

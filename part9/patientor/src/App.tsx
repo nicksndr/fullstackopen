@@ -7,7 +7,7 @@ import {
   Routes,
   useParams,
 } from "react-router-dom";
-import { Button, Divider, Container, Typography } from "@mui/material";
+import { Button, Divider, Container, Typography, TextField } from "@mui/material";
 
 import { apiBaseUrl } from "./constants";
 import { Patient, Entry } from "./types";
@@ -51,6 +51,33 @@ const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
   }
 };
 
+const HealthCheckEntryForm: React.FC<{ patientId: string }> = ({ patientId }) => {
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [specialist, setSpecialist] = useState("");
+  const [healthCheckRating, setHealthCheckRating] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    patientService.addEntry(patientId, {
+      description: description,
+      date: date,
+      specialist: specialist,
+    } as Entry);
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <TextField label="Description" fullWidth value={description} onChange={(event) => setDescription(event.target.value)} />
+      <TextField label="Date" fullWidth value={date} onChange={(event) => setDate(event.target.value)} />
+      <TextField label="Specialist" fullWidth value={specialist} onChange={(event) => setSpecialist(event.target.value)} />
+      <TextField label="Health Check Rating" fullWidth value={healthCheckRating} onChange={(event) => setHealthCheckRating(event.target.value)} />
+      <TextField label="Diagnosis Codes" fullWidth value={diagnosisCodes} onChange={(event) => setDiagnosisCodes(event.target.value)} />
+      <Button variant="contained" color="primary" type="submit">Add Entry</Button>
+    </form>
+  );
+};
+
 const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
   const { id } = useParams<{ id: string }>();
   const patient = patients.find((patient) => patient.id === id);
@@ -61,6 +88,8 @@ const PatientDetailPlaceholder = ({ patients }: { patients: Patient[] }) => {
       <p>occupation: {patient?.occupation}</p>
       <p>date of birth: {patient?.dateOfBirth}</p>
       <br></br>
+      <h3>New Health Check Entry</h3>
+      <HealthCheckEntryForm patientId={id as string} />
       <h3>Entries</h3>
       {patient?.entries.map((entry) => (
         <div key={entry.id}>

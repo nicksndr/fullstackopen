@@ -1,4 +1,4 @@
-import { NewPatientData, Gender, HealthCheckRating, NewEntryData } from './types';
+import { NewPatientData, Gender, NewEntryData } from './types';
 import { z } from "zod";
 
 // Old manual validation approach (commented out)
@@ -61,7 +61,8 @@ const healthCheckEntrySchema = z.object({
     specialist: z.string().min(1, 'Specialist is required'),
     diagnosisCodes: z.array(z.string()).optional(),
     type: z.literal('HealthCheck'),
-    healthCheckRating: z.enum(HealthCheckRating),
+    // JSON sends number; accept 0–3 (HealthCheckRating enum values)
+    healthCheckRating: z.number().int().min(0).max(3),
 });
 
 const hospitalEntrySchema = z.object({

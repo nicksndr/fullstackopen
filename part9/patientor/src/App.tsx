@@ -13,10 +13,19 @@ import {
   Container,
   Typography,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  SelectChangeEvent,
 } from "@mui/material";
 
 import { apiBaseUrl } from "./constants";
-import { Patient, Entry, HealthCheckRating } from "./types";
+import { Patient, Diagnosis, Entry, HealthCheckRating } from "./types";
 
 import patientService, { addEntry } from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
@@ -67,23 +76,24 @@ const HealthCheckEntryForm: React.FC<{
   const [healthCheckRating, setHealthCheckRating] = useState<number>(
     HealthCheckRating.Healthy,
   );
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+
+  // - allDiagnoses — the full list of available Diagnosis objects (with code, name, latin) from the backend data. Used to populate the dropdown options so the user 
+  // sees "M24.2 - Disorder of ligament" etc.                                                                                                                        
+  // - diagnosisCodes — the string[] state holding just the codes the user has selected (e.g. ["M24.2", "Z57.1"]). This is what gets sent to the backend in the form 
+  // submission.                                               
+                                                                                                                                                                  
+  // So allDiagnoses defines what's available to pick, diagnosisCodes tracks what's been picked. 
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+  const allDiagnoses: Diagnosis[] = diagnosisService.getEntries();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const codes = diagnosisCodes.trim()
-      ? diagnosisCodes
-          .split(",")
-          .map((c) => c.trim())
-          .filter(Boolean)
-      : undefined;
-    // Now the response from addEntry is used to replace the patient in state
     const updatedPatient = await addEntry(patientId, {
       description,
       date,
       specialist,
       // adds diagnosisCodes to the payload when there are codes, if codes has items it adds them to the payload, otherwise it doesn't add anything
-      ...(codes?.length ? { diagnosisCodes: codes } : {}),
+      ...(diagnosisCodes.length ? { diagnosisCodes } : {}),
       type: "HealthCheck",
       healthCheckRating,
     } as Entry);
@@ -99,7 +109,9 @@ const HealthCheckEntryForm: React.FC<{
       />
       <TextField
         label="Date"
+        type="date"
         fullWidth
+        InputLabelProps={{ shrink: true }}
         value={date}
         onChange={(event) => setDate(event.target.value)}
       />
@@ -109,19 +121,50 @@ const HealthCheckEntryForm: React.FC<{
         value={specialist}
         onChange={(event) => setSpecialist(event.target.value)}
       />
-      {/* the purpose is: to force the type when TypeScript would otherwise forbid a direct cast (string → enum). */}
-      <TextField
-        label="Health Check Rating"
-        fullWidth
-        value={healthCheckRating}
-        onChange={(event) => setHealthCheckRating(Number(event.target.value))}
-      />
-      <TextField
-        label="Diagnosis Codes"
-        fullWidth
-        value={diagnosisCodes}
-        onChange={(event) => setDiagnosisCodes(event.target.value)}
-      />
+
+      {/* the purpose is: to force the type when TypeScript would otherwise forbid a direct cast (string → enum).                                  
+      <TextField                                                                                                                                
+      label="Health Check Rating"                                                                                                             
+      fullWidth                                                                                                                               
+      value={healthCheckRating}                                                                                                               
+      onChange={(event) => setHealthCheckRating(Number(event.target.value))}                                                                  
+      />                                                                                                                                        
+      <TextField                                                                                                                                
+      label="Diagnosis Codes"                                                                                                                 
+      fullWidth                                                                                                                               
+      value={diagnosisCodes}                                                                                                                  
+      onChange={(event) => setDiagnosisCodes(event.target.value)}                                                                             
+      />  */}
+      <FormControl component="fieldset" fullWidth>
+        <FormLabel component="legend">Health Check Rating</FormLabel>
+        <RadioGroup
+          row
+          value={healthCheckRating}
+          onChange={(event) => setHealthCheckRating(Number(event.target.value))}
+        >
+          <FormControlLabel value={0} control={<Radio />} label="Healthy" />
+          <FormControlLabel value={1} control={<Radio />} label="Low Risk" />
+          <FormControlLabel value={2} control={<Radio />} label="High Risk" />
+          <FormControlLabel value={3} control={<Radio />} label="Critical Risk" />
+        </RadioGroup>
+      </FormControl>
+      <FormControl fullWidth>
+        <InputLabel>Diagnosis Codes</InputLabel>
+        <Select
+          multiple
+          value={diagnosisCodes}
+          onChange={(event: SelectChangeEvent<string[]>) =>
+            setDiagnosisCodes(event.target.value as string[])
+          }
+          label="Diagnosis Codes"
+        >
+          {allDiagnoses.map((d) => (
+            <MenuItem key={d.code} value={d.code}>
+              {d.code} - {d.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <Button variant="contained" color="primary" type="submit">
         Add Entry
       </Button>
